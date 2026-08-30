@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'apps.projects',
     'apps.compliance',
     'apps.review',
+    'apps.handover',
+    'apps.reports',
     'seeds',
 ]
 
