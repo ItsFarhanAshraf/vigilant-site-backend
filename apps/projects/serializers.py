@@ -163,6 +163,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
 class ProjectDetailSerializer(serializers.ModelSerializer):
     assigned_engineer_name = serializers.SerializerMethodField()
     compliance = serializers.SerializerMethodField()
+    compliance_scores = serializers.SerializerMethodField()
     current_phase = serializers.SerializerMethodField()
     completion_percentage = serializers.SerializerMethodField()
     milestones = MilestoneSerializer(many=True, read_only=True)
@@ -192,6 +193,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             'environment_status',
             'quality_status',
             'compliance',
+            'compliance_scores',
             'site_risk_flag',
             'overall_progress_pct',
             'current_milestone_no',
@@ -215,6 +217,10 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             'environment_status': obj.environment_status,
             'quality_status': obj.quality_status,
         }
+
+    def get_compliance_scores(self, obj):
+        from apps.compliance.services import ComplianceService
+        return ComplianceService.get_project_scores(obj)
 
     def get_current_phase(self, obj):
         return ProjectService.get_phase(obj.current_milestone_no)
