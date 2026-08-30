@@ -57,7 +57,7 @@ def _build_error_payload(exc, response):
         code=code,
         message=message,
         details=details,
-        status_code=response.status_code,
+        status_code=None,
     )
 
 

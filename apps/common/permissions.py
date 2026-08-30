@@ -58,3 +58,60 @@ class IsOwnerOrAdmin(permissions.BasePermission):
         if hasattr(obj, 'id'):
             return obj.id == request.user.id
         return False
+
+
+class CanViewProject(permissions.BasePermission):
+    """Permission to view a project: Admin, BRE, assigned FE, or owning HouseOwner."""
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if not user or not user.is_authenticated:
+            return False
+        if user.role in (UserRole.ADMIN, UserRole.BACKEND_REVIEW_ENGINEER):
+            return True
+        if user.role == UserRole.FIELD_ENGINEER:
+            return obj.assigned_engineer_id == user.id
+        if user.role == UserRole.HOUSE_OWNER:
+            return (
+                (user.cnic_hash and obj.owner_cnic_hash == user.cnic_hash)
+                or (user.phone and obj.owner_phone == user.phone)
+            )
+        return False
+
+
+class CanEditProject(permissions.BasePermission):
+    """Permission to edit project details: Admin or assigned FieldEngineer."""
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if not user or not user.is_authenticated:
+            return False
+        if user.role == UserRole.ADMIN:
+            return True
+        if user.role == UserRole.FIELD_ENGINEER:
+            return obj.assigned_engineer_id == user.id
+        return False
+
+
+class CanCompleteMilestone(permissions.BasePermission):
+    """Permission to complete milestone: FieldEngineer assigned to project, or Admin."""
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if not user or not user.is_authenticated:
+            return False
+        if user.role == UserRole.ADMIN:
+            return True
+        if user.role == UserRole.FIELD_ENGINEER:
+            return obj.assigned_engineer_id == user.id
+        return False
+
