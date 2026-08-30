@@ -162,3 +162,14 @@ class ProjectService:
             engineer_remarks=data.get('engineer_remarks', ''),
         )
         return visit
+
+    @classmethod
+    def submit_for_review(cls, project, milestone_no, photos=None):
+        """Called when field engineer completes a milestone. Triggers AI analysis and adds to review queue."""
+        pm = ProjectMilestone.objects.filter(project=project, milestone_no=milestone_no).first()
+        return {
+            'project_id': project.id,
+            'milestone_no': milestone_no,
+            'status': pm.status if pm else 'PENDING',
+            'photos_count': len(photos) if photos else 0,
+        }

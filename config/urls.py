@@ -43,9 +43,10 @@ urlpatterns = [
     path('users/<int:id>/', UserDetailView.as_view(), name='user-detail'),
     path('users/<int:id>/activate/', UserActivateView.as_view(), name='user-activate'),
 
-    # Projects & Compliance
+    # Projects, Compliance & Review
     path('', include('apps.projects.urls')),
     path('', include('apps.compliance.urls')),
+    path('', include('apps.review.urls')),
 
     # API Documentation
     re_path(
