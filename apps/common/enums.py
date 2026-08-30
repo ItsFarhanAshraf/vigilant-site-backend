@@ -95,4 +95,14 @@ class MaterialType(models.TextChoices):
     STEEL = 'STEEL', 'Steel'
 
 
+class AuditAction(models.TextChoices):
+    LOGIN = 'LOGIN', 'Login'
+    LOGOUT = 'LOGOUT', 'Logout'
+    CREATE = 'CREATE', 'Create'
+    UPDATE = 'UPDATE', 'Update'
+    DELETE = 'DELETE', 'Delete'
+    ACTIVATE = 'ACTIVATE', 'Activate'
+    DEACTIVATE = 'DEACTIVATE', 'Deactivate'
+
+
 MILESTONE_NO_CHOICES = [(i, f'Milestone {i}') for i in range(1, 16)]

@@ -12,7 +12,8 @@ class DivisionAdmin(admin.ModelAdmin):
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'user', 'action', 'entity_type', 'entity_id', 'ip_address', 'created_at',
+        'id', 'user', 'action', 'entity_type', 'entity_id',
+        'ip_address', 'created_at',
     )
     list_filter = ('action', 'entity_type', 'created_at')
     search_fields = ('action', 'entity_type', 'user__username')
@@ -22,7 +23,8 @@ class AuditLogAdmin(admin.ModelAdmin):
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'user', 'type', 'title', 'priority', 'is_read', 'related_project', 'created_at',
+        'id', 'user', 'type', 'title', 'priority', 'is_read',
+        'related_project', 'created_at',
     )
     list_filter = ('type', 'priority', 'is_read', 'created_at')
     search_fields = ('title', 'body', 'user__username')

@@ -109,6 +109,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
     ),
@@ -118,6 +121,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+    'EXCEPTION_HANDLER': 'apps.common.exceptions.custom_exception_handler',
 }
 
 SIMPLE_JWT = {
@@ -125,7 +129,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:3000')
@@ -135,9 +142,16 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOW_ALL_ORIGINS = False
-    CORS_ALLOWED_ORIGINS = [FRONTEND_URL]
+    CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[FRONTEND_URL])
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS',
+]
+CORS_ALLOW_HEADERS = [
+    'accept', 'accept-encoding', 'authorization', 'content-type',
+    'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with',
+]
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
