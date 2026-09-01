@@ -48,14 +48,14 @@ export const SettingsDashboard = () => {
   const [securityForm, setSecurityForm] = useState(settings.security);
   const [notifForm, setNotifForm] = useState(settings.notificationToggles);
 
-  // Construction Stages Configuration State
+  // Construction Stages Configuration State (ACAG 2-Tranche Model: 7.5L + 7.5L = 1.5M)
   const [stagesConfig, setStagesConfig] = useState([
-    { id: 1, name: 'Foundation', durationDays: 14, reqInsp: true, trancheRelease: '25%' },
-    { id: 2, name: 'Structure', durationDays: 20, reqInsp: true, trancheRelease: '25%' },
-    { id: 3, name: 'Roof', durationDays: 18, reqInsp: true, trancheRelease: '25%' },
-    { id: 4, name: 'Electrical', durationDays: 12, reqInsp: false, trancheRelease: '0%' },
-    { id: 5, name: 'Plumbing', durationDays: 12, reqInsp: false, trancheRelease: '0%' },
-    { id: 6, name: 'Finishing', durationDays: 15, reqInsp: true, trancheRelease: '25%' },
+    { id: 1, name: 'Foundation', durationDays: 14, reqInsp: true, trancheRelease: '1st Tranche: PKR 7.5 Lakh (50%)' },
+    { id: 2, name: 'Structure', durationDays: 20, reqInsp: true, trancheRelease: 'Milestone Inspection' },
+    { id: 3, name: 'Roof', durationDays: 18, reqInsp: true, trancheRelease: '2nd Tranche: PKR 7.5 Lakh (50%)' },
+    { id: 4, name: 'Electrical', durationDays: 12, reqInsp: false, trancheRelease: 'Quality Audit' },
+    { id: 5, name: 'Plumbing', durationDays: 12, reqInsp: false, trancheRelease: 'Quality Audit' },
+    { id: 6, name: 'Finishing', durationDays: 15, reqInsp: true, trancheRelease: 'Final Milestone' },
     { id: 7, name: 'Final Inspection & Handover', durationDays: 5, reqInsp: true, trancheRelease: 'Completion Certificate' },
   ]);
 

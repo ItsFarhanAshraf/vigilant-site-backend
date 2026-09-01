@@ -320,70 +320,112 @@ export const LoanManagement = () => {
       </div>
 
       {/* =========================================================================
-          MODAL 1: LOAN DETAILS & TRANCHE BREAKDOWN
+          MODAL 1: LOAN DETAILS & 2-TRANCHE BREAKDOWN
          ========================================================================= */}
       {selectedLoanDetail && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl p-6 space-y-5 animate-in fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-base font-black text-slate-900">
-                  Loan Account: {selectedLoanDetail.id}
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Applicant: {selectedLoanDetail.applicant} ({selectedLoanDetail.cnic})
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base font-black text-slate-900">
+                    Loan Account: {selectedLoanDetail.id}
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-orange-100 text-orange-800">
+                    2-Tranche Model (50% + 50%)
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Applicant: <strong className="text-slate-800">{selectedLoanDetail.applicant}</strong> ({selectedLoanDetail.cnic})
                 </p>
               </div>
               <button
                 onClick={() => setSelectedLoanDetail(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Bank Information Card */}
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Disbursing Bank:</span>
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <span className="text-slate-400 text-[10px] uppercase font-bold block">Disbursing Bank</span>
                 <span className="font-bold text-slate-900">{selectedLoanDetail.bank}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">IBAN Account:</span>
+              <div>
+                <span className="text-slate-400 text-[10px] uppercase font-bold block">Account / IBAN</span>
                 <span className="font-mono font-bold text-slate-900">{selectedLoanDetail.accountNo}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">House Case ID:</span>
+              <div>
+                <span className="text-slate-400 text-[10px] uppercase font-bold block">House Case ID</span>
                 <span className="font-mono font-bold text-orange-700">{selectedLoanDetail.houseId}</span>
               </div>
             </div>
 
-            {/* Tranches Schedule */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">
-                Milestone Installment Tranches (Bank of Punjab)
+            {/* Total Loan Progress Bar */}
+            <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-200/70 space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-bold text-slate-700">Total Approved Facility:</span>
+                <span className="font-black text-slate-900 font-mono text-sm">PKR {(selectedLoanDetail.approvedAmount / 1000000).toFixed(2)} Million (15 Lakh)</span>
+              </div>
+              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-emerald-600 h-full transition-all duration-300 rounded-full"
+                  style={{
+                    width: `${Math.round((selectedLoanDetail.disbursedAmount / (selectedLoanDetail.approvedAmount || 1)) * 100)}%`,
+                  }}
+                />
+              </div>
+              <div className="flex justify-between text-[11px] text-slate-500 font-mono">
+                <span>Disbursed: <strong className="text-emerald-700">PKR {selectedLoanDetail.disbursedAmount.toLocaleString()}</strong></span>
+                <span>Remaining: <strong className="text-slate-700">PKR {selectedLoanDetail.remainingAmount.toLocaleString()}</strong></span>
+              </div>
+            </div>
+
+            {/* 2-Tranche Schedule */}
+            <div className="space-y-2.5">
+              <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between">
+                <span>Bank of Punjab 2-Tranche Schedule</span>
+                <span className="text-[10px] text-slate-500 font-normal">1st Tranche Initial • 2nd Tranche at 50% Completion</span>
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {selectedLoanDetail.tranches?.map((tranche) => (
                   <div
                     key={tranche.trancheNo}
-                    className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs"
+                    className={`p-3.5 rounded-2xl border transition flex items-center justify-between text-xs ${
+                      tranche.status === 'Disbursed'
+                        ? 'border-emerald-200 bg-emerald-50/40'
+                        : 'border-slate-200 bg-white'
+                    }`}
                   >
-                    <div>
-                      <div className="font-black text-slate-900">
-                        Tranche {tranche.trancheNo}: {tranche.stage}
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`h-9 w-9 rounded-xl font-black text-xs flex items-center justify-center shrink-0 ${
+                          tranche.status === 'Disbursed'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-orange-500 text-white shadow-xs'
+                        }`}
+                      >
+                        {tranche.trancheNo === 1 ? '50%' : '50%'}
                       </div>
-                      <div className="text-[10px] text-slate-500">
-                        Amount: <strong className="text-slate-800 font-mono">PKR {tranche.amount.toLocaleString()}</strong>
-                        {tranche.voucherRef && ` • Ref: ${tranche.voucherRef}`}
+                      <div>
+                        <div className="font-black text-slate-900">
+                          Tranche {tranche.trancheNo}: {tranche.stage}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          Amount: <strong className="text-slate-900 font-mono">PKR {tranche.amount.toLocaleString()} (7.5 Lakh)</strong>
+                          {tranche.date && ` • Disbursed: ${tranche.date}`}
+                          {tranche.voucherRef && ` • Voucher: ${tranche.voucherRef}`}
+                        </div>
                       </div>
                     </div>
 
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                      className={`px-3 py-1 rounded-full text-[10px] font-black shrink-0 ${
                         tranche.status === 'Disbursed'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-amber-100 text-amber-800'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : 'bg-amber-100 text-amber-800 border border-amber-200'
                       }`}
                     >
                       {tranche.status}
@@ -397,7 +439,7 @@ export const LoanManagement = () => {
               <button
                 type="button"
                 onClick={() => setSelectedLoanDetail(null)}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition"
+                className="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition cursor-pointer"
               >
                 Close Details
               </button>
@@ -418,7 +460,7 @@ export const LoanManagement = () => {
               </h3>
               <button
                 onClick={() => setDisburseModalLoan(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -429,19 +471,19 @@ export const LoanManagement = () => {
                 Tranche {selectedTrancheToDisburse.trancheNo} — {selectedTrancheToDisburse.stage}
               </div>
               <div>Applicant: <strong>{disburseModalLoan.applicant}</strong> ({disburseModalLoan.cnic})</div>
-              <div>Disbursal Amount: <strong className="font-mono text-base text-orange-900">PKR {selectedTrancheToDisburse.amount.toLocaleString()}</strong></div>
-              <div>Account: <span className="font-mono">{disburseModalLoan.accountNo}</span></div>
+              <div>Disbursal Amount: <strong className="font-mono text-base text-orange-900">PKR {selectedTrancheToDisburse.amount.toLocaleString()} (7.5 Lakh / 50%)</strong></div>
+              <div>Account: <span className="font-mono font-bold">{disburseModalLoan.accountNo}</span></div>
             </div>
 
             <p className="text-[11px] text-slate-500">
-              Authorizing this release generates a real-time Bank of Punjab treasury voucher and credits the beneficiary’s ACAG account.
+              Authorizing this release generates a real-time Bank of Punjab treasury voucher and credits the 50% installment (PKR 7.5 Lakh) to the beneficiary's account.
             </p>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setDisburseModalLoan(null)}
-                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition"
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
               >
                 Cancel
               </button>

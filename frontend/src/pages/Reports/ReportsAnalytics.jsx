@@ -240,21 +240,21 @@ export const ReportsAnalytics = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] text-slate-400 font-bold uppercase">Total Financing Committed</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase">Total Loan Accounts</span>
               <div className="text-xl font-black text-slate-900 mt-0.5">
-                PKR {(loans.reduce((acc, l) => acc + l.approvedAmount, 0) / 1000000).toFixed(2)}M
+                {loans.length} Beneficiaries
               </div>
             </div>
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] text-slate-400 font-bold uppercase">Total Disbursed Through BOP</span>
+              <span className="text-[10px] text-emerald-800 font-bold uppercase">Total Disbursed (50% Tranches)</span>
               <div className="text-xl font-black text-emerald-700 mt-0.5">
                 PKR {(loans.reduce((acc, l) => acc + l.disbursedAmount, 0) / 1000000).toFixed(2)}M
               </div>
             </div>
             <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-2xs">
-              <span className="text-[10px] text-slate-400 font-bold uppercase">Pending Installments</span>
+              <span className="text-[10px] text-amber-800 font-bold uppercase">Pending Milestones</span>
               <div className="text-xl font-black text-amber-700 mt-0.5">
-                PKR {(loans.reduce((acc, l) => acc + l.remainingAmount, 0) / 1000000).toFixed(2)}M
+                {loans.reduce((acc, l) => acc + l.tranches.filter(t => t.status !== 'Disbursed').length, 0)} Tranches
               </div>
             </div>
           </div>
@@ -458,13 +458,22 @@ export const ReportsAnalytics = () => {
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3 text-xs">
-              <div className="grid grid-cols-3 gap-2 text-center font-bold">
-                <div className="p-2 bg-white rounded-xl border">Total Active Houses: {houses.length}</div>
-                <div className="p-2 bg-white rounded-xl border">Completed Handover: {houses.filter((h) => h.status === 'Completed').length}</div>
-                <div className="p-2 bg-white rounded-xl border">BOP Disbursed: PKR {(loans.reduce((acc, l) => acc + l.disbursedAmount, 0) / 1000000).toFixed(2)}M</div>
+              <div className="grid grid-cols-3 gap-2.5 text-center font-bold">
+                <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block">Total Mapped Houses</span>
+                  <span className="text-sm font-black text-slate-900">{houses.length} Units</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                  <span className="text-[10px] text-blue-700 font-bold uppercase block">Under Construction</span>
+                  <span className="text-sm font-black text-blue-900">{houses.filter((h) => h.status === 'Under Construction').length} Units</span>
+                </div>
+                <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                  <span className="text-[10px] text-emerald-700 font-bold uppercase block">Completed Handover</span>
+                  <span className="text-sm font-black text-emerald-800">{houses.filter((h) => h.status === 'Completed').length} Units</span>
+                </div>
               </div>
-              <p className="text-slate-700">
-                Summary: Field inspections conducted smoothly across {districtsList.length} divisions. Safety violations were flagged in Gujranwala corridor and re-inspection directives dispatched.
+              <p className="text-slate-700 leading-relaxed">
+                Summary: Field inspections conducted smoothly across {districtsList.length} Punjab divisions. Safety protocols and milestone progress verified on-site by certified field engineers.
               </p>
             </div>
 

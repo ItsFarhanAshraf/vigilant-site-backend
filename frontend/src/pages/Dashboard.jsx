@@ -49,7 +49,7 @@ export const Dashboard = () => {
     approveVisitReport
   } = useDashboardData();
 
-  const [selectedMapHouse, setSelectedMapHouse] = useState(houses[0]);
+  const [selectedMapHouse, setSelectedMapHouse] = useState(null);
   const [selectedVisitForModal, setSelectedVisitForModal] = useState(null);
 
   // Compute live statistics
@@ -489,78 +489,94 @@ export const Dashboard = () => {
           </div>
         </div>
 
-        {/* 3. Loan Overview Bar / Area Summary (4 cols) */}
-        <div className="lg:col-span-4 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+        {/* 3. Loan & Tranche Model (4 cols) - Clean & Elegant */}
+        <div
+          onClick={() => navigate('/loans')}
+          className="lg:col-span-4 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between hover:shadow-md hover:border-orange-300 transition duration-200 cursor-pointer group"
+          title="Click to view Loan Management"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-black text-slate-900">Loan & Disbursement Overview</h2>
-              <p className="text-[11px] text-slate-500">Bank of Punjab Housing Tranches</p>
-            </div>
-            <CreditCard className="h-5 w-5 text-orange-600" />
-          </div>
-
-          <div className="space-y-3 my-2">
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase">Total Approved</span>
-                <div className="text-base font-black text-slate-900">
-                  PKR {(totalLoanApproved / 1000000).toFixed(2)}M
-                </div>
-              </div>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-blue-100 text-blue-800">
-                100%
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-orange-100 text-orange-800 mb-1">
+                Bank of Punjab
               </span>
+              <h2 className="text-sm font-black text-slate-900 group-hover:text-orange-700 transition">
+                Housing Loan Scheme
+              </h2>
             </div>
-
-            <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100 flex items-center justify-between">
-              <div>
-                <span className="text-[10px] font-bold text-emerald-800 uppercase">Total Disbursed</span>
-                <div className="text-base font-black text-emerald-900">
-                  PKR {(totalLoanDisbursed / 1000000).toFixed(2)}M
-                </div>
-              </div>
-              <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-200/80 text-emerald-900">
-                {Math.round((totalLoanDisbursed / (totalLoanApproved || 1)) * 100)}%
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-500 font-bold block">Remaining</span>
-                <span className="font-mono font-black text-slate-800">PKR {(totalLoanRemaining / 1000000).toFixed(2)}M</span>
-              </div>
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] text-slate-500 font-bold block">Pending Tranches</span>
-                <span className="font-mono font-black text-amber-700">{pendingInstallmentsCount} Installments</span>
-              </div>
+            <div className="text-right">
+              <span className="text-[10px] text-slate-400 font-bold block">Total Per House</span>
+              <span className="text-sm font-black text-slate-900 font-mono">PKR 1.5 Million</span>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => navigate('/loans')}
-            className="w-full py-2 bg-orange-50 hover:bg-orange-100 text-orange-800 font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-1 cursor-pointer"
-          >
-            <span>Manage All Loan Tranches</span>
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+          {/* Elegant 2-Tranche Visual Flow */}
+          <div className="space-y-2.5 my-3">
+            {/* 1st Tranche Card */}
+            <div className="p-3 bg-slate-50 hover:bg-orange-50/50 rounded-xl border border-slate-100 transition flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-lg bg-orange-500 text-white font-black text-xs flex items-center justify-center shadow-xs">
+                  1st
+                </div>
+                <div>
+                  <div className="text-xs font-black text-slate-900">1st Tranche (50%)</div>
+                  <div className="text-[11px] text-slate-500">Foundation & Structure</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-black text-orange-700 font-mono">PKR 7.5 Lakh</div>
+                <span className="text-[10px] font-bold text-slate-400">On Approval</span>
+              </div>
+            </div>
+
+            {/* 2nd Tranche Card */}
+            <div className="p-3 bg-slate-50 hover:bg-emerald-50/50 rounded-xl border border-slate-100 transition flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-lg bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
+                  2nd
+                </div>
+                <div>
+                  <div className="text-xs font-black text-slate-900">2nd Tranche (50%)</div>
+                  <div className="text-[11px] text-slate-500">Roof Slab & Finishing</div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-black text-emerald-700 font-mono">PKR 7.5 Lakh</div>
+                <span className="text-[10px] font-bold text-slate-400">On Inspection</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom subtle note & action */}
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <span className="text-slate-400 font-medium">Milestone Verified by Engineers</span>
+            <span className="text-orange-700 font-bold group-hover:translate-x-0.5 transition flex items-center gap-0.5">
+              <span>View Loans</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </span>
+          </div>
         </div>
       </div>
 
       {/* =========================================================================
-          ROW 3: GIS OVERVIEW MAP WITH INTERACTIVE PIN POPOVER + ALERTS
+          ROW 3: GIS OVERVIEW MAP & UNIFIED LIVE ALERTS HUB (ALIGNED & ELEGANT)
          ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         {/* GIS Overview Map (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="text-sm font-black text-slate-900">GIS House Locations & Risks</h2>
-              <p className="text-[11px] text-slate-500">Live Punjab Project Geo-pins with status coloring</p>
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-xl bg-orange-50 text-orange-700 flex items-center justify-center font-black">
+                <MapPin className="h-4 w-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-black text-slate-900">Punjab GIS Geospatial Grid</h2>
+                <p className="text-[11px] text-slate-500">Live Punjab Project Geo-pins with real-time status</p>
+              </div>
             </div>
             <button
               onClick={() => navigate('/gis-map')}
-              className="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-extrabold flex items-center gap-1.5 transition cursor-pointer"
             >
               <Maximize2 className="h-3.5 w-3.5" />
               <span>Full GIS Map</span>
@@ -568,21 +584,22 @@ export const Dashboard = () => {
           </div>
 
           {/* Map Canvas */}
-          <div className="relative bg-gradient-to-br from-emerald-900/10 via-slate-100 to-blue-900/10 rounded-2xl p-4 min-h-[280px] border border-slate-200 overflow-hidden flex items-center justify-center">
-            {/* Punjab Grid Background */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:18px_18px]" />
+          <div className="relative bg-slate-950 rounded-2xl p-4 min-h-[290px] border border-slate-800 overflow-hidden flex items-center justify-center">
+            {/* High-tech Geo Grid Overlay */}
+            <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#f97316_1px,transparent_1px)] [background-size:20px_20px]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/40 pointer-events-none" />
 
-            {/* Pins Container */}
+            {/* Live Geo Pins */}
             <div className="relative w-full max-w-lg h-60">
               {houses.slice(0, 7).map((h, i) => {
                 const posStyles = [
-                  { top: '15%', left: '35%' }, // Rawalpindi
-                  { top: '35%', left: '60%' }, // Gujranwala
-                  { top: '45%', left: '72%' }, // Lahore
-                  { top: '48%', left: '38%' }, // Faisalabad
-                  { top: '70%', left: '28%' }, // Multan
-                  { top: '80%', left: '42%' }, // Bahawalpur
-                  { top: '28%', left: '22%' }, // Sargodha
+                  { top: '16%', left: '42%' }, // Rawalpindi
+                  { top: '34%', left: '65%' }, // Gujranwala
+                  { top: '46%', left: '76%' }, // Lahore
+                  { top: '48%', left: '46%' }, // Faisalabad
+                  { top: '72%', left: '32%' }, // Multan
+                  { top: '82%', left: '44%' }, // Bahawalpur
+                  { top: '26%', left: '26%' }, // Sargodha
                 ][i] || { top: '50%', left: '50%' };
 
                 const isSelected = selectedMapHouse?.id === h.id;
@@ -591,17 +608,21 @@ export const Dashboard = () => {
                   <div
                     key={h.id}
                     style={posStyles}
-                    onClick={() => setSelectedMapHouse(h)}
+                    onClick={() => setSelectedMapHouse(isSelected ? null : h)}
                     className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-20"
+                    title={`Click ${h.district} (${h.id})`}
                   >
+                    {/* Pulsing ring for active sites */}
+                    <span className="absolute -inset-1 rounded-full bg-orange-500/30 animate-ping opacity-75" />
+                    
                     <div
-                      className={`h-7 w-7 rounded-full text-white text-[10px] font-black flex items-center justify-center shadow-lg border-2 border-white ring-2 transition-transform duration-200 group-hover:scale-125 ${getMarkerColor(
+                      className={`relative h-7 w-7 rounded-full text-white text-[10px] font-black flex items-center justify-center shadow-lg border-2 border-white transition-all duration-200 group-hover:scale-125 ${getMarkerColor(
                         h
                       )} ${isSelected ? 'scale-125 ring-4 ring-orange-400' : ''}`}
                     >
                       {h.progressPct}%
                     </div>
-                    <span className="text-[9px] font-extrabold bg-white/95 text-slate-800 px-1.5 py-0.5 rounded shadow-xs border border-slate-200 mt-1 block whitespace-nowrap">
+                    <span className="text-[9px] font-black bg-slate-900/90 text-white px-1.5 py-0.5 rounded-md border border-slate-700 mt-1 block whitespace-nowrap text-center shadow-md">
                       {h.district}
                     </span>
                   </div>
@@ -609,49 +630,37 @@ export const Dashboard = () => {
               })}
             </div>
 
-            {/* Clicked House Summary Popover Overlay */}
+            {/* Clicked House Docked Mini-Inspector (Clean & Unobtrusive) */}
             {selectedMapHouse && (
-              <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:w-80 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200 shadow-xl z-30 animate-in fade-in">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="font-mono text-xs font-black text-orange-700">{selectedMapHouse.id}</span>
-                    <h3 className="text-xs font-bold text-slate-900">{selectedMapHouse.ownerName}</h3>
-                    <p className="text-[10px] text-slate-500 truncate">{selectedMapHouse.address}</p>
+              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/95 backdrop-blur-md p-3 rounded-2xl border border-slate-700/80 shadow-2xl z-30 animate-in fade-in flex items-center justify-between gap-3 text-white">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="h-10 w-10 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center font-black shrink-0">
+                    <Home className="h-5 w-5" />
                   </div>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
-                      selectedMapHouse.status === 'Completed'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : selectedMapHouse.status === 'Under Construction'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-amber-100 text-amber-800'
-                    }`}
-                  >
-                    {selectedMapHouse.status}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-slate-100 text-center text-[10px]">
-                  <div>
-                    <span className="text-slate-400 font-bold block">Stage</span>
-                    <span className="font-bold text-slate-800">{selectedMapHouse.stage}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-bold block">Engineer</span>
-                    <span className="font-bold text-slate-800 truncate block">{selectedMapHouse.engineerName}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 font-bold block">Progress</span>
-                    <span className="font-black text-emerald-600">{selectedMapHouse.progressPct}%</span>
+                  <div className="truncate">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-black text-orange-400">{selectedMapHouse.id}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-white/10 text-slate-300">
+                        {selectedMapHouse.stage}
+                      </span>
+                    </div>
+                    <div className="text-xs font-bold text-white truncate">{selectedMapHouse.ownerName} • {selectedMapHouse.district}</div>
                   </div>
                 </div>
 
-                <div className="mt-2.5 flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     onClick={() => navigate(`/houses?highlight=${selectedMapHouse.id}`)}
-                    className="flex-1 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 text-white text-[10px] font-extrabold rounded-lg shadow-xs transition"
+                    className="px-3 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-[11px] font-extrabold rounded-xl shadow-xs transition cursor-pointer"
                   >
-                    View 360° House Details
+                    View Details →
+                  </button>
+                  <button
+                    onClick={() => setSelectedMapHouse(null)}
+                    className="p-1 rounded-lg text-slate-400 hover:text-white transition cursor-pointer"
+                    title="Close"
+                  >
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -659,46 +668,69 @@ export const Dashboard = () => {
           </div>
 
           {/* Map Color Legend */}
-          <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-slate-100 text-[11px] font-bold">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" /> Green = Completed
+          <div className="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-slate-100 text-[11px] font-bold text-slate-600">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" /> Completed
             </span>
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="h-2.5 w-2.5 rounded-full bg-blue-600" /> Blue = Under Construction
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-blue-600" /> Under Construction
             </span>
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Yellow = Pending
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Pending Approval
             </span>
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="h-2.5 w-2.5 rounded-full bg-rose-600" /> Red = High Risk
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-rose-600" /> High Safety Risk
             </span>
           </div>
         </div>
 
-        {/* Safety & Environmental Alerts (5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          {/* Section 1: Safety Alerts */}
-          <div className="bg-white rounded-2xl p-4.5 border border-slate-200/80 shadow-2xs">
-            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <ShieldAlert className="h-4 w-4 text-rose-600" />
-                <h3 className="text-xs font-black text-slate-900">Live Safety Violations & Alerts</h3>
+        {/* Unified Live Alerts & Site Hazards Center (5 cols) */}
+        <div className="lg:col-span-5 bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between space-y-4">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <div className="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-black">
+                <ShieldAlert className="h-4 w-4" />
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700">
-                {openSafetyIssuesCount} Open
-              </span>
+              <div>
+                <h3 className="text-sm font-black text-slate-900">Live Alerts & Hazards Hub</h3>
+                <p className="text-[11px] text-slate-500">Real-time safety violations & climate alerts</p>
+              </div>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700">
+              {openSafetyIssuesCount} Active
+            </span>
+          </div>
+
+          {/* Section 1: Safety Violations */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="font-extrabold text-slate-700 uppercase tracking-wider">Safety Incidents</span>
+              <button
+                onClick={() => navigate('/safety')}
+                className="font-bold text-orange-700 hover:text-orange-900 transition flex items-center gap-0.5"
+              >
+                <span>Manage</span>
+                <ChevronRight className="h-3 w-3" />
+              </button>
             </div>
 
             <div className="space-y-2">
               {safetyIssues.slice(0, 2).map((item) => (
-                <div key={item.id} className="p-2.5 rounded-xl bg-rose-50/50 border border-rose-200/70 flex items-start gap-2.5">
-                  <div className="h-7 w-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                <div
+                  key={item.id}
+                  onClick={() => navigate('/safety')}
+                  className="p-2.5 rounded-2xl bg-rose-50/50 hover:bg-rose-50 border border-rose-200/60 transition cursor-pointer flex items-start gap-2.5"
+                >
+                  <div className="h-7 w-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 mt-0.5">
                     <AlertTriangle className="h-3.5 w-3.5" />
                   </div>
-                  <div className="flex-1 overflow-hidden">
-                    <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
                       <span className="text-xs font-bold text-slate-900 truncate">{item.issueType}</span>
-                      <span className="text-[9px] font-black text-rose-700 uppercase">{item.severity}</span>
+                      <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-rose-200/70 text-rose-900 shrink-0">
+                        {item.severity}
+                      </span>
                     </div>
                     <p className="text-[11px] text-slate-600 line-clamp-1 mt-0.5">{item.description}</p>
                     <div className="text-[9.5px] text-slate-400 font-mono mt-1">
@@ -708,61 +740,58 @@ export const Dashboard = () => {
                 </div>
               ))}
             </div>
-
-            <button
-              onClick={() => navigate('/safety')}
-              className="w-full mt-2.5 py-1.5 text-center text-xs font-bold text-rose-700 hover:text-rose-900 bg-rose-50 rounded-xl transition cursor-pointer"
-            >
-              Open Safety Dashboard →
-            </button>
           </div>
 
-          {/* Section 2: Environmental Alerts */}
-          <div className="bg-white rounded-2xl p-4.5 border border-slate-200/80 shadow-2xs">
-            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <CloudSun className="h-4 w-4 text-amber-600" />
-                <h3 className="text-xs font-black text-slate-900">Site Environmental Risks</h3>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800">
-                Weather Advisory
-              </span>
+          {/* Section 2: Environmental Advisories */}
+          <div className="space-y-2 pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="font-extrabold text-slate-700 uppercase tracking-wider">Environmental Advisories</span>
+              <button
+                onClick={() => navigate('/environmental')}
+                className="font-bold text-amber-700 hover:text-amber-900 transition flex items-center gap-0.5"
+              >
+                <span>Monitor</span>
+                <ChevronRight className="h-3 w-3" />
+              </button>
             </div>
 
-            <div className="space-y-2">
-              <div className="p-2.5 rounded-xl bg-amber-50/60 border border-amber-200 flex items-start gap-2.5">
-                <div className="h-7 w-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+            <div className="grid grid-cols-1 gap-2">
+              <div
+                onClick={() => navigate('/environmental')}
+                className="p-2.5 rounded-2xl bg-amber-50/60 hover:bg-amber-50 border border-amber-200/70 transition cursor-pointer flex items-start gap-2.5"
+              >
+                <div className="h-7 w-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
                   <ThermometerSun className="h-3.5 w-3.5" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">High Temperature & Heatwave</span>
-                    <span className="text-[9px] font-black text-amber-800">42°C</span>
+                    <span className="text-xs font-bold text-slate-900 truncate">High Temperature & Heatwave</span>
+                    <span className="text-[9.5px] font-black px-1.5 py-0.2 rounded-md bg-amber-200 text-amber-900">42°C</span>
                   </div>
-                  <p className="text-[11px] text-slate-600 mt-0.5">Bahawalpur & RYK: Mandatory hydration breaks every 45 mins.</p>
+                  <p className="text-[11px] text-slate-600 line-clamp-1 mt-0.5">
+                    Bahawalpur & RYK: Mandatory hydration breaks every 45 mins.
+                  </p>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-sky-50/60 border border-sky-200 flex items-start gap-2.5">
-                <div className="h-7 w-7 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center shrink-0">
+              <div
+                onClick={() => navigate('/environmental')}
+                className="p-2.5 rounded-2xl bg-sky-50/60 hover:bg-sky-50 border border-sky-200/70 transition cursor-pointer flex items-start gap-2.5"
+              >
+                <div className="h-7 w-7 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center shrink-0 mt-0.5">
                   <Droplets className="h-3.5 w-3.5" />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">Heavy Monsoon Rainfall Alert</span>
-                    <span className="text-[9px] font-black text-sky-800">Sialkot</span>
+                    <span className="text-xs font-bold text-slate-900 truncate">Monsoon Rain Forecast</span>
+                    <span className="text-[9.5px] font-black px-1.5 py-0.2 rounded-md bg-sky-200 text-sky-900">Sialkot</span>
                   </div>
-                  <p className="text-[11px] text-slate-600 mt-0.5">ACAG-S-9911: Concrete slab pouring paused for 24 hours.</p>
+                  <p className="text-[11px] text-slate-600 line-clamp-1 mt-0.5">
+                    ACAG-S-9911: Concrete slab pouring paused for 24 hours.
+                  </p>
                 </div>
               </div>
             </div>
-
-            <button
-              onClick={() => navigate('/environmental')}
-              className="w-full mt-2.5 py-1.5 text-center text-xs font-bold text-amber-800 hover:text-amber-950 bg-amber-50 rounded-xl transition cursor-pointer"
-            >
-              Open Environmental Monitor →
-            </button>
           </div>
         </div>
       </div>

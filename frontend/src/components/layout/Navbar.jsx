@@ -20,7 +20,8 @@ import {
   CloudSun,
   Home,
   UserCheck,
-  CreditCard
+  CreditCard,
+  Menu
 } from 'lucide-react';
 
 export const Navbar = () => {

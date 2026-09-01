@@ -19,7 +19,12 @@ import {
   FileCheck,
   Hammer,
   Sparkles,
-  Camera
+  Camera,
+  LayoutGrid,
+  List,
+  MapPin,
+  Phone,
+  GraduationCap
 } from 'lucide-react';
 
 export const LabourManagement = () => {
@@ -36,6 +41,7 @@ export const LabourManagement = () => {
   const [activeTab, setActiveTab] = useState('WORKERS');
   const [searchQuery, setSearchQuery] = useState('');
   const [skillFilter, setSkillFilter] = useState('ALL');
+  const [viewMode, setViewMode] = useState('GRID'); // 'GRID' | 'TABLE'
 
   // Modals
   const [isRecordSessionModalOpen, setIsRecordSessionModalOpen] = useState(false);
@@ -67,7 +73,6 @@ export const LabourManagement = () => {
   const pendingTrainingWorkers = totalWorkers - trainedWorkers;
   const totalTrainingSessions = engineers.reduce((acc, e) => acc + (e.trainingSessionsConducted || 0), 0);
 
-  // Skills list
   const skillsList = ['Mason', 'Electrician', 'Plumber', 'Carpenter', 'Welder', 'Painter'];
 
   const filteredWorkers = workers.filter((w) => {
@@ -116,79 +121,97 @@ export const LabourManagement = () => {
     setTopicForm({ name: '', duration: '30 mins', required: true, description: '' });
   };
 
+  const getSkillColor = (skill) => {
+    switch (skill) {
+      case 'Mason': return 'bg-amber-50 text-amber-800 border-amber-200';
+      case 'Electrician': return 'bg-blue-50 text-blue-800 border-blue-200';
+      case 'Plumber': return 'bg-sky-50 text-sky-800 border-sky-200';
+      case 'Carpenter': return 'bg-orange-50 text-orange-800 border-orange-200';
+      case 'Welder': return 'bg-purple-50 text-purple-800 border-purple-200';
+      default: return 'bg-slate-50 text-slate-800 border-slate-200';
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-            Labour Management & Worker Safety Training
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+              Labour & Workforce Safety Training
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-orange-100 text-orange-800">
+              Site Artisan Registry
+            </span>
+          </div>
           <p className="text-xs text-slate-500 mt-0.5">
             Track site artisans, mandatory PPE skill certifications, and field training conducted during engineer visits
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsRecordSessionModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 flex items-center gap-1.5 transition cursor-pointer"
-          >
-            <BookOpen className="h-4 w-4" />
-            <span>Record On-Site Training</span>
-          </button>
+        <button
+          onClick={() => setIsRecordSessionModalOpen(true)}
+          className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 flex items-center gap-2 transition cursor-pointer"
+        >
+          <BookOpen className="h-4 w-4" />
+          <span>Record Field Training</span>
+        </button>
+      </div>
+
+      {/* Top 4 KPI Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="h-12 w-12 rounded-2xl bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center font-black shrink-0 shadow-xs">
+            <Users className="h-6 w-6" />
+          </div>
+          <div>
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Artisans</span>
+            <span className="text-2xl font-black text-slate-900 block font-mono">{totalWorkers} Workers</span>
+            <span className="text-[10px] text-blue-700 font-bold">6 Skill Trades Active</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center font-black shrink-0 shadow-xs">
+            <CheckCircle2 className="h-6 w-6" />
+          </div>
+          <div>
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Safety Certified</span>
+            <span className="text-2xl font-black text-emerald-800 block font-mono">{trainedWorkers} Trained</span>
+            <span className="text-[10px] text-emerald-700 font-bold">100% PPE Qualified</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="h-12 w-12 rounded-2xl bg-amber-50 text-amber-700 border border-amber-100 flex items-center justify-center font-black shrink-0 shadow-xs">
+            <Clock className="h-6 w-6" />
+          </div>
+          <div>
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Training Due</span>
+            <span className="text-2xl font-black text-amber-700 block font-mono">{pendingTrainingWorkers} Pending</span>
+            <span className="text-[10px] text-amber-700 font-bold">Scheduled Next Visit</span>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+          <div className="h-12 w-12 rounded-2xl bg-purple-50 text-purple-700 border border-purple-100 flex items-center justify-center font-black shrink-0 shadow-xs">
+            <GraduationCap className="h-6 w-6" />
+          </div>
+          <div>
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Sessions Logged</span>
+            <span className="text-2xl font-black text-purple-900 block font-mono">{totalTrainingSessions} Sessions</span>
+            <span className="text-[10px] text-purple-700 font-bold">Engineer Verified</span>
+          </div>
         </div>
       </div>
 
-      {/* Top 4 Training Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="h-11 w-11 rounded-2xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center font-black shrink-0">
-            <Users className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Workers</span>
-            <span className="text-2xl font-black text-slate-900 block">{totalWorkers}</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-black shrink-0">
-            <CheckCircle2 className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Fully Trained</span>
-            <span className="text-2xl font-black text-emerald-700 block">{trainedWorkers}</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="h-11 w-11 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center font-black shrink-0">
-            <Clock className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pending Training</span>
-            <span className="text-2xl font-black text-amber-700 block">{pendingTrainingWorkers}</span>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="h-11 w-11 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200 flex items-center justify-center font-black shrink-0">
-            <Award className="h-5 w-5" />
-          </div>
-          <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Training Sessions</span>
-            <span className="text-2xl font-black text-purple-900 block">{totalTrainingSessions}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main 3 Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
+      {/* Main Tabs Navigation */}
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-1 overflow-x-auto">
         {[
-          { id: 'WORKERS', label: 'Registered Workers', icon: Users },
-          { id: 'TOPICS', label: 'Training Topics Catalog', icon: BookOpen },
-          { id: 'HISTORY', label: 'Worker Training Matrix & History', icon: FileCheck },
+          { id: 'WORKERS', label: 'Registered Artisans', icon: Users },
+          { id: 'TOPICS', label: 'Safety Curriculum Catalog', icon: BookOpen },
+          { id: 'HISTORY', label: 'Skill Qualification Matrix', icon: FileCheck },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -196,10 +219,10 @@ export const LabourManagement = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold transition flex items-center gap-2 cursor-pointer ${
+              className={`px-4 py-2 rounded-2xl text-xs font-bold transition flex items-center gap-2 cursor-pointer shrink-0 ${
                 isActive
-                  ? 'bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white shadow-md shadow-orange-500/20'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -214,108 +237,191 @@ export const LabourManagement = () => {
          ========================================================================= */}
       {activeTab === 'WORKERS' && (
         <div className="space-y-4">
-          {/* Search & Skill Filter Toolbar */}
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Toolbar */}
+          <div className="bg-white p-3.5 rounded-3xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="relative w-full sm:w-80">
-              <Search className="h-4 w-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-2.5" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search worker by name, skill, house..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 transition"
+                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 font-medium transition"
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <span className="text-xs font-bold text-slate-500">Skill Trade:</span>
-              <select
-                value={skillFilter}
-                onChange={(e) => setSkillFilter(e.target.value)}
-                className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 cursor-pointer"
-              >
-                <option value="ALL">All Skills</option>
-                {skillsList.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end overflow-x-auto pb-1 sm:pb-0">
+              <div className="flex items-center gap-1.5">
+                {['ALL', ...skillsList].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSkillFilter(s)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+                      skillFilter === s
+                        ? 'bg-slate-900 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {s === 'ALL' ? 'All Trades' : s}
+                  </button>
                 ))}
-              </select>
+              </div>
+
+              <div className="h-5 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+
+              {/* Grid / Table Toggle */}
+              <div className="flex items-center bg-slate-100 p-1 rounded-2xl">
+                <button
+                  onClick={() => setViewMode('GRID')}
+                  className={`p-1.5 rounded-xl transition cursor-pointer ${
+                    viewMode === 'GRID' ? 'bg-white text-orange-700 shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Card Grid View"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('TABLE')}
+                  className={`p-1.5 rounded-xl transition cursor-pointer ${
+                    viewMode === 'TABLE' ? 'bg-white text-orange-700 shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                  title="Table View"
+                >
+                  <List className="h-4 w-4" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Workers Table */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-extrabold uppercase tracking-wider">
-                    <th className="py-3.5 px-5">Worker ID</th>
-                    <th className="py-3.5 px-4">Name & Contact</th>
-                    <th className="py-3.5 px-4">Skill Trade</th>
-                    <th className="py-3.5 px-4">Assigned House</th>
-                    <th className="py-3.5 px-4">Training Status</th>
-                    <th className="py-3.5 px-4">Safety Status</th>
-                    <th className="py-3.5 px-5 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredWorkers.map((w) => (
-                    <tr key={w.id} className="hover:bg-slate-50/80 transition">
-                      <td className="py-4 px-5 font-mono font-black text-slate-900">
-                        {w.id}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-black text-slate-900">{w.name}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">{w.phone}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-50 text-blue-800 border border-blue-200">
-                          {w.skill}
+          {/* VIEW 1: ARTISAN CARDS */}
+          {viewMode === 'GRID' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {filteredWorkers.map((w) => (
+                <div
+                  key={w.id}
+                  className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-md hover:border-orange-200 transition duration-200 flex flex-col justify-between space-y-4"
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
+                          {w.name[0]}
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-black text-slate-900 leading-tight">{w.name}</h3>
+                          <span className="text-[11px] text-slate-400 font-mono">{w.id}</span>
+                        </div>
+                      </div>
+
+                      <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black border uppercase tracking-wider shrink-0 ${getSkillColor(w.skill)}`}>
+                        {w.skill}
+                      </span>
+                    </div>
+
+                    {/* House Assignment & Phone */}
+                    <div className="mt-3.5 pt-3 border-t border-slate-100 space-y-1.5 text-xs text-slate-600">
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-orange-600 shrink-0" />
+                        <span className="font-bold text-slate-800 truncate">
+                          {w.assignedHouseId} ({w.assignedHouseOwner})
                         </span>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-mono font-black text-orange-700">{w.assignedHouseId}</div>
-                        <div className="text-[10px] text-slate-500">{w.assignedHouseOwner}</div>
-                      </td>
-                      <td className="py-4 px-4">
-                        {w.trainingStatus === 'Trained' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
-                            <Check className="h-3 w-3" /> Fully Trained
-                          </span>
-                        ) : w.trainingStatus === 'In Progress' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-50 text-purple-800 border border-purple-200">
-                            <Clock className="h-3 w-3" /> In Progress
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">
-                            <AlertTriangle className="h-3 w-3" /> Pending
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-4">
-                        {w.safetyStatus === 'Safe' ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
-                            <ShieldCheck className="h-3 w-3" /> Compliant
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">
-                            <AlertTriangle className="h-3 w-3" /> Warning
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-5 text-right">
-                        <button
-                          onClick={() => setSelectedWorkerHistory(w)}
-                          className="px-3 py-1 bg-white border border-slate-200 hover:border-orange-300 text-slate-800 hover:text-orange-700 text-[11px] font-extrabold rounded-xl shadow-2xs transition cursor-pointer"
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                        <span className="font-mono">{w.phone}</span>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold ${
+                            w.trainingStatus === 'Trained'
+                              ? 'bg-emerald-50 text-emerald-800'
+                              : 'bg-amber-50 text-amber-800'
+                          }`}
                         >
-                          Training History
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          {w.trainingStatus === 'Trained' ? <Check className="h-3 w-3 text-emerald-600" /> : <Clock className="h-3 w-3 text-amber-600" />}
+                          <span>{w.trainingStatus}</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-3 border-t border-slate-100">
+                    <button
+                      onClick={() => setSelectedWorkerHistory(w)}
+                      className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      <span>View Training Transcript</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
+
+          {/* VIEW 2: COMPACT TABLE */}
+          {viewMode === 'TABLE' && (
+            <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-extrabold uppercase tracking-wider">
+                      <th className="py-4 px-5 whitespace-nowrap">Artisan ID & Name</th>
+                      <th className="py-4 px-4 whitespace-nowrap">Skill Trade</th>
+                      <th className="py-4 px-4 whitespace-nowrap">Assigned Site</th>
+                      <th className="py-4 px-4 whitespace-nowrap">Training Status</th>
+                      <th className="py-4 px-4 whitespace-nowrap">Safety Score</th>
+                      <th className="py-4 px-5 text-right whitespace-nowrap">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredWorkers.map((w) => (
+                      <tr key={w.id} className="hover:bg-slate-50/80 transition">
+                        <td className="py-4 px-5 whitespace-nowrap">
+                          <div className="font-black text-slate-900 text-sm">{w.name}</div>
+                          <div className="text-[11px] text-slate-400 font-mono">{w.id} • {w.phone}</div>
+                        </td>
+
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-xl text-[10px] font-black border ${getSkillColor(w.skill)}`}>
+                            {w.skill}
+                          </span>
+                        </td>
+
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <div className="font-bold text-orange-700 font-mono">{w.assignedHouseId}</div>
+                          <div className="text-[11px] text-slate-500">{w.assignedHouseOwner}</div>
+                        </td>
+
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black border ${
+                              w.trainingStatus === 'Trained'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-amber-50 text-amber-800 border-amber-200'
+                            }`}
+                          >
+                            {w.trainingStatus}
+                          </span>
+                        </td>
+
+                        <td className="py-4 px-4 whitespace-nowrap font-bold text-emerald-700">
+                          {w.safetyStatus === 'Safe' ? '100% Compliant' : 'Warning'}
+                        </td>
+
+                        <td className="py-4 px-5 text-right whitespace-nowrap">
+                          <button
+                            onClick={() => setSelectedWorkerHistory(w)}
+                            className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-2xs transition cursor-pointer"
+                          >
+                            Transcript
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -325,26 +431,29 @@ export const LabourManagement = () => {
       {activeTab === 'TOPICS' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-black text-slate-900">Standard ACAG Safety Training Curriculum</h2>
+            <div>
+              <h2 className="text-sm font-black text-slate-900">Standard Safety Curriculum Modules</h2>
+              <p className="text-xs text-slate-500">Certified by Government HSE Directorate</p>
+            </div>
             <button
               onClick={() => setIsAddTopicModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Add Training Topic</span>
+              <span>Add Curriculum Topic</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {trainingTopics.map((topic) => (
-              <div key={topic.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex flex-col justify-between hover:shadow-md transition">
+              <div key={topic.id} className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between hover:shadow-md transition">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-[10px] font-black text-orange-700 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200">
+                    <span className="font-mono text-[10px] font-black text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-md border border-orange-200">
                       {topic.id}
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded-full text-[9px] font-black ${
+                      className={`px-2.5 py-0.5 rounded-full text-[9.5px] font-black ${
                         topic.required ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-slate-100 text-slate-600'
                       }`}
                     >
@@ -352,13 +461,13 @@ export const LabourManagement = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-xs font-black text-slate-900">{topic.name}</h3>
-                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">{topic.description}</p>
+                  <h3 className="text-sm font-black text-slate-900 mt-1">{topic.name}</h3>
+                  <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{topic.description}</p>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
                   <span className="text-slate-400">Duration: <strong className="text-slate-800">{topic.duration}</strong></span>
-                  <span className="text-purple-700 font-extrabold">{topic.trainedCount} Workers Trained</span>
+                  <span className="text-purple-700 font-extrabold">{topic.trainedCount} Trained</span>
                 </div>
               </div>
             ))}
@@ -367,14 +476,14 @@ export const LabourManagement = () => {
       )}
 
       {/* =========================================================================
-          TAB 3: WORKER TRAINING MATRIX & HISTORY
+          TAB 3: QUALIFICATION MATRIX
          ========================================================================= */}
       {activeTab === 'HISTORY' && (
         <div className="space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-4">
+          <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-2xs space-y-4">
             <div>
-              <h2 className="text-sm font-black text-slate-900">Worker Safety Training Matrix</h2>
-              <p className="text-xs text-slate-500">Live qualification transcript of each artisan across mandatory modules</p>
+              <h2 className="text-sm font-black text-slate-900">Worker Safety Qualification Matrix</h2>
+              <p className="text-xs text-slate-500">Live qualification transcript of each artisan across mandatory safety modules</p>
             </div>
 
             <div className="space-y-3">
@@ -382,36 +491,36 @@ export const LabourManagement = () => {
                 <div key={worker.id} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-8 w-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black text-xs">
+                      <div className="h-9 w-9 rounded-2xl bg-orange-600 text-white flex items-center justify-center font-black text-xs">
                         {worker.name[0]}
                       </div>
                       <div>
                         <div className="text-xs font-black text-slate-900">{worker.name} ({worker.id})</div>
-                        <div className="text-[10px] text-slate-500">{worker.skill} • Assigned to {worker.assignedHouseId} ({worker.assignedHouseOwner})</div>
+                        <div className="text-[11px] text-slate-500">{worker.skill} • Assigned to {worker.assignedHouseId} ({worker.assignedHouseOwner})</div>
                       </div>
                     </div>
 
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
+                      className={`px-3 py-1 rounded-xl text-[10px] font-black ${
                         worker.trainingStatus === 'Trained'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-amber-100 text-amber-800'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : 'bg-amber-100 text-amber-800 border border-amber-200'
                       }`}
                     >
-                      {worker.trainingStatus} ({worker.completedTopics.length} / {worker.completedTopics.length + worker.pendingTopics.length} Topics)
+                      {worker.trainingStatus} ({worker.completedTopics.length} / {worker.completedTopics.length + worker.pendingTopics.length} Modules)
                     </span>
                   </div>
 
                   {/* Modules Progress Badges */}
                   <div className="flex flex-wrap gap-2 pt-1">
                     {worker.completedTopics.map((topic, i) => (
-                      <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                         <Check className="h-3 w-3 text-emerald-600" />
-                        <span>{topic} — Completed</span>
+                        <span>{topic} — Certified</span>
                       </span>
                     ))}
                     {worker.pendingTopics.map((topic, i) => (
-                      <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      <span key={i} className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                         <Clock className="h-3 w-3 text-amber-600" />
                         <span>{topic} — Pending</span>
                       </span>
@@ -424,19 +533,20 @@ export const LabourManagement = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL 1: RECORD ON-SITE TRAINING SESSION
-         ========================================================================= */}
+      {/* MODAL 1: RECORD ON-SITE TRAINING */}
       {isRecordSessionModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl p-6 space-y-4 animate-in fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-base font-black text-slate-900">
-                Record On-Site Labour Training
-              </h3>
+              <div>
+                <h3 className="text-base font-black text-slate-900">
+                  Record On-Site Labour Training
+                </h3>
+                <p className="text-xs text-slate-500">Log session verified by visiting engineer</p>
+              </div>
               <button
                 onClick={() => setIsRecordSessionModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -452,7 +562,7 @@ export const LabourManagement = () => {
                     value={sessionForm.houseId}
                     onChange={(e) => setSessionForm({ ...sessionForm, houseId: e.target.value })}
                     required
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                   >
                     {houses.map((h) => (
                       <option key={h.id} value={h.id}>
@@ -464,13 +574,13 @@ export const LabourManagement = () => {
 
                 <div>
                   <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Conducting Engineer
+                    Conducting Officer
                   </label>
                   <select
                     value={sessionForm.engineerId}
                     onChange={(e) => setSessionForm({ ...sessionForm, engineerId: e.target.value })}
                     required
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                   >
                     {engineers.map((eng) => (
                       <option key={eng.id} value={eng.id}>
@@ -488,7 +598,7 @@ export const LabourManagement = () => {
                     value={sessionForm.topic}
                     onChange={(e) => setSessionForm({ ...sessionForm, topic: e.target.value })}
                     required
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                   >
                     {trainingTopics.map((t) => (
                       <option key={t.id} value={t.name}>
@@ -509,14 +619,14 @@ export const LabourManagement = () => {
                     min={15}
                     max={180}
                     required
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                  Workers Present (Select all attendees)
+                  Attendees (Select all present artisans)
                 </label>
                 <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
                   {workers.map((w) => {
@@ -547,14 +657,14 @@ export const LabourManagement = () => {
 
               <div>
                 <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                  Engineer Remarks & Assessment
+                  Engineer Remarks
                 </label>
                 <textarea
                   value={sessionForm.remarks}
                   onChange={(e) => setSessionForm({ ...sessionForm, remarks: e.target.value })}
-                  placeholder="e.g. All workers demonstrated correct harness tying on 2nd level..."
+                  placeholder="e.g. Demonstration completed; workers equipped with harnesses."
                   rows={2}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                 />
               </div>
 
@@ -562,13 +672,13 @@ export const LabourManagement = () => {
                 <button
                   type="button"
                   onClick={() => setIsRecordSessionModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold shadow-md transition"
+                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold shadow-md transition cursor-pointer"
                 >
                   Save Training Log
                 </button>
@@ -578,19 +688,17 @@ export const LabourManagement = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL 2: ADD TRAINING TOPIC
-         ========================================================================= */}
+      {/* MODAL 2: ADD TRAINING TOPIC */}
       {isAddTopicModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl p-6 space-y-4 animate-in fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="text-base font-black text-slate-900">
-                Add New Training Topic
+                Add Safety Curriculum Topic
               </h3>
               <button
                 onClick={() => setIsAddTopicModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -605,16 +713,16 @@ export const LabourManagement = () => {
                   type="text"
                   value={topicForm.name}
                   onChange={(e) => setTopicForm({ ...topicForm, name: e.target.value })}
-                  placeholder="e.g. Chemical Handling & Paint Safety"
+                  placeholder="e.g. Scaffolding & Fall Prevention"
                   required
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Standard Duration
+                    Duration
                   </label>
                   <input
                     type="text"
@@ -622,7 +730,7 @@ export const LabourManagement = () => {
                     onChange={(e) => setTopicForm({ ...topicForm, duration: e.target.value })}
                     placeholder="30 mins"
                     required
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                   />
                 </div>
 
@@ -633,25 +741,25 @@ export const LabourManagement = () => {
                   <select
                     value={topicForm.required ? 'MANDATORY' : 'OPTIONAL'}
                     onChange={(e) => setTopicForm({ ...topicForm, required: e.target.value === 'MANDATORY' })}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                   >
-                    <option value="MANDATORY">Mandatory for All</option>
-                    <option value="OPTIONAL">Optional / Trade Specific</option>
+                    <option value="MANDATORY">Mandatory</option>
+                    <option value="OPTIONAL">Optional</option>
                   </select>
                 </div>
               </div>
 
               <div>
                 <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                  Description / Curriculum Summary
+                  Topic Description
                 </label>
                 <textarea
                   value={topicForm.description}
                   onChange={(e) => setTopicForm({ ...topicForm, description: e.target.value })}
-                  placeholder="Describe key learning objectives and demonstration requirements..."
+                  placeholder="Summary of learning outcomes..."
                   rows={2}
                   required
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600"
+                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
                 />
               </div>
 
@@ -659,13 +767,13 @@ export const LabourManagement = () => {
                 <button
                   type="button"
                   onClick={() => setIsAddTopicModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold shadow-md transition"
+                  className="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold shadow-md transition cursor-pointer"
                 >
                   Add Topic
                 </button>
@@ -675,34 +783,32 @@ export const LabourManagement = () => {
         </div>
       )}
 
-      {/* =========================================================================
-          MODAL 3: INDIVIDUAL WORKER HISTORY MODAL
-         ========================================================================= */}
+      {/* MODAL 3: WORKER TRANSCRIPT */}
       {selectedWorkerHistory && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl p-6 space-y-4 animate-in fade-in">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-sm font-black text-slate-900">
-                  {selectedWorkerHistory.name} — Training Transcript
+                <h3 className="text-base font-black text-slate-900">
+                  {selectedWorkerHistory.name} — Safety Transcript
                 </h3>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs text-slate-500 font-mono">
                   {selectedWorkerHistory.skill} • {selectedWorkerHistory.id}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedWorkerHistory(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="space-y-2">
               <span className="text-[10px] font-black uppercase text-slate-400">Completed Modules ({selectedWorkerHistory.completedTopics.length}):</span>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {selectedWorkerHistory.completedTopics.map((topic, i) => (
-                  <div key={i} className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
+                  <div key={i} className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
                     <span className="font-bold text-emerald-950">{topic}</span>
                     <span className="font-extrabold text-emerald-700 flex items-center gap-1">
                       <Check className="h-3.5 w-3.5" /> Certified
@@ -715,9 +821,9 @@ export const LabourManagement = () => {
             {selectedWorkerHistory.pendingTopics.length > 0 && (
               <div className="space-y-2 pt-2">
                 <span className="text-[10px] font-black uppercase text-slate-400">Pending Required Modules ({selectedWorkerHistory.pendingTopics.length}):</span>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {selectedWorkerHistory.pendingTopics.map((topic, i) => (
-                    <div key={i} className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
+                    <div key={i} className="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
                       <span className="font-bold text-amber-950">{topic}</span>
                       <span className="font-extrabold text-amber-700">Scheduled on next visit</span>
                     </div>
@@ -730,7 +836,7 @@ export const LabourManagement = () => {
               <button
                 type="button"
                 onClick={() => setSelectedWorkerHistory(null)}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition"
+                className="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition cursor-pointer"
               >
                 Close Transcript
               </button>

@@ -8,17 +8,17 @@ export const Layout = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-slate-100/60 flex flex-col">
+    <div className="min-h-screen bg-slate-100/60 flex flex-col w-full max-w-[100vw] overflow-x-hidden">
       <Navbar />
-      <div className="flex flex-1 items-start">
+      <div className="flex flex-1 items-start w-full min-w-0 overflow-x-hidden">
         <Sidebar />
-        <main className="flex-1 p-4 sm:p-6 lg:p-7 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-7 max-w-7xl mx-auto w-full min-w-0 overflow-x-hidden">
           <Outlet />
         </main>
       </div>
 
-      {/* Dark Footer Banner matching the screenshot */}
-      <footer className="bg-slate-950 text-slate-300 py-3.5 px-6 text-xs border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-inner">
+      {/* Dark Footer Banner */}
+      <footer className="bg-slate-950 text-slate-300 py-3.5 px-6 text-xs border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-inner w-full">
         <div className="font-medium">
           <span className="text-amber-400 font-bold">{t('copyright')}</span>
         </div>
