@@ -155,12 +155,14 @@ const INITIAL_HOUSES = [
     plotSizeMarla: 5,
     coveredAreaSqft: 1100,
     stage: 'Structure',
-    status: 'Under Construction',
+    status: 'Re-Visit',
+    reInspectionRequired: true,
+    revisitReason: 'Foundation rebar alignment & scaffolding defect rectification re-visit',
     progressPct: 45,
     loanApproved: 1500000,
     loanDisbursed: 750000,
     remainingLoan: 750000,
-    loanStatus: '1st Tranche Disbursed (PKR 750k)',
+    loanStatus: '1st Tranche Disbursed - Re-Visit Pending',
     engineerId: 1,
     engineerName: 'Shoaib Akhtar',
     safetyStatus: 'Critical Issue',
@@ -1380,14 +1382,34 @@ export const DashboardDataProvider = ({ children }) => {
   };
 
   const approveVisitReport = (visitId) => {
+    const targetVisit = visits.find((v) => v.id === visitId);
     setVisits((prev) =>
-      prev.map((v) => (v.id === visitId ? { ...v, adminApproved: true, reInspectionRequired: false } : v))
+      prev.map((v) => (v.id === visitId ? { ...v, adminApproved: true, reInspectionRequired: false, status: 'Completed' } : v))
     );
-    showToast(`Visit report ${visitId} approved.`);
+
+    if (targetVisit) {
+      setHouses((prev) =>
+        prev.map((h) => {
+          if (h.id === targetVisit.houseId) {
+            const nextStatus = h.progressPct >= 100 ? 'Completed' : 'Under Construction';
+            return {
+              ...h,
+              status: nextStatus,
+              reInspectionRequired: false,
+              revisitReason: null,
+            };
+          }
+          return h;
+        })
+      );
+    }
+
+    showToast(`Visit report ${visitId} approved & site cleared!`);
     addAuditLog(`Approved Visit Report`, 'Engineer Visits', visitId);
   };
 
   const requestReInspection = (visitId, remarks) => {
+    const targetVisit = visits.find((v) => v.id === visitId);
     setVisits((prev) =>
       prev.map((v) =>
         v.id === visitId
@@ -1395,8 +1417,78 @@ export const DashboardDataProvider = ({ children }) => {
           : v
       )
     );
+
+    if (targetVisit) {
+      setHouses((prev) =>
+        prev.map((h) => (h.id === targetVisit.houseId ? { ...h, status: 'Re-Visit', reInspectionRequired: true, revisitReason: remarks } : h))
+      );
+    }
+
     showToast(`Re-inspection requested for visit ${visitId}.`, 'warning');
     addAuditLog(`Requested Re-Inspection (${remarks})`, 'Engineer Visits', visitId);
+  };
+
+  const scheduleHouseReVisit = (houseId, engineerId, visitDate, visitTime, reason) => {
+    const targetHouse = houses.find((h) => h.id === houseId);
+    const targetEng = engineers.find((e) => e.id === Number(engineerId)) || engineers[0];
+
+    // Update house status to Re-Visit / Rectification
+    setHouses((prev) =>
+      prev.map((h) =>
+        h.id === houseId
+          ? {
+              ...h,
+              status: 'Re-Visit',
+              reInspectionRequired: true,
+              revisitReason: reason || 'Site defect rectification inspection',
+              engineerId: targetEng.id,
+              engineerName: targetEng.name,
+            }
+          : h
+      )
+    );
+
+    // Create a new scheduled re-visit record
+    const newVisit = {
+      id: `VST-REV-${String(visits.length + 101).padStart(3, '0')}`,
+      houseId: targetHouse ? targetHouse.id : houseId,
+      houseAddress: targetHouse ? targetHouse.address : 'Site Location',
+      engineerId: targetEng.id,
+      engineerName: targetEng.name,
+      visitType: 'Re-Inspection & Rectification Audit',
+      visitDate: visitDate || new Date().toISOString().split('T')[0],
+      visitTime: visitTime || '11:00 AM',
+      purpose: `Re-Visit following previous rejection / defect: ${reason || 'Rectification Audit'}`,
+      progressPctReported: targetHouse ? targetHouse.progressPct : 0,
+      workersPresent: 4,
+      trainingProvided: null,
+      safetyChecklist: null,
+      environmentalConditions: null,
+      issuesFound: [],
+      engineerRemarks: `Re-Visit scheduled to verify rectification of defects: ${reason || 'Passed standards check required.'}`,
+      photos: [],
+      aiHazardResult: null,
+      status: 'Scheduled',
+      adminApproved: false,
+      reInspectionRequired: true,
+    };
+    setVisits((prev) => [newVisit, ...prev]);
+
+    // Add notification
+    const newNotif = {
+      id: Date.now(),
+      type: 'RE_INSPECTION',
+      title: `Ghar Ka Re-Visit Scheduled: ${houseId}`,
+      houseId: houseId,
+      description: `${targetEng.name} assigned to re-visit and re-inspect ${houseId} for defect resolution.`,
+      time: 'Just now',
+      unread: true,
+      category: 'Visits',
+    };
+    setNotifications((prev) => [newNotif, ...prev]);
+
+    showToast(`Re-visit scheduled for house ${houseId}!`);
+    addAuditLog(`Scheduled Re-Visit (${reason})`, 'House Management', houseId);
   };
 
   // ==================== ENGINEER MANAGEMENT ACTIONS ====================
@@ -1667,6 +1759,7 @@ export const DashboardDataProvider = ({ children }) => {
     scheduleVisit,
     approveVisitReport,
     requestReInspection,
+    scheduleHouseReVisit,
 
     // Engineer operations
     addEngineer,

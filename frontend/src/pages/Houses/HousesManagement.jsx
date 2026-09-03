@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useDashboardData } from '../../context/DashboardDataContext';
+import { generateDomainPdf } from '../../utils/pdfGenerator';
 import {
   Building2,
   Home,
@@ -24,7 +25,9 @@ import {
   Camera,
   FileCheck,
   ChevronRight,
-  Plus
+  Plus,
+  Download,
+  RotateCcw
 } from 'lucide-react';
 
 export const HousesManagement = () => {
@@ -45,7 +48,8 @@ export const HousesManagement = () => {
     rejectHouse,
     assignEngineerToHouse,
     updateHouseStatus,
-    scheduleVisit
+    scheduleVisit,
+    scheduleHouseReVisit
   } = useDashboardData();
 
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -75,12 +79,22 @@ export const HousesManagement = () => {
     notes: '',
   });
 
+  // Re-Visit Modal State
+  const [reVisitModalHouse, setReVisitModalHouse] = useState(null);
+  const [reVisitForm, setReVisitForm] = useState({
+    engineerId: '',
+    visitDate: new Date().toISOString().split('T')[0],
+    visitTime: '11:00 AM',
+    reason: 'Site defect rectification inspection following previous rejection/violation',
+  });
+
   // Filter houses by Tab
   const filteredHouses = houses.filter((h) => {
     // Tab filter
     if (activeTab === 'APPLICATIONS' && h.status !== 'Pending') return false;
     if (activeTab === 'APPROVED' && h.status !== 'Approved') return false;
     if (activeTab === 'UNDER_CONSTRUCTION' && h.status !== 'Under Construction') return false;
+    if (activeTab === 'REVISIT' && h.status !== 'Re-Visit' && !h.reInspectionRequired) return false;
     if (activeTab === 'COMPLETED' && h.status !== 'Completed') return false;
     if (activeTab === 'REJECTED' && h.status !== 'Rejected') return false;
 
@@ -111,6 +125,7 @@ export const HousesManagement = () => {
     APPLICATIONS: houses.filter((h) => h.status === 'Pending').length,
     APPROVED: houses.filter((h) => h.status === 'Approved').length,
     UNDER_CONSTRUCTION: houses.filter((h) => h.status === 'Under Construction').length,
+    REVISIT: houses.filter((h) => h.status === 'Re-Visit' || h.reInspectionRequired).length,
     COMPLETED: houses.filter((h) => h.status === 'Completed').length,
     REJECTED: houses.filter((h) => h.status === 'Rejected').length,
   };
@@ -130,6 +145,20 @@ export const HousesManagement = () => {
       rejectHouse(rejectModalHouse.id, rejectReason);
       setRejectModalHouse(null);
       setRejectReason('');
+    }
+  };
+
+  const handleReVisitSubmit = (e) => {
+    e.preventDefault();
+    if (reVisitModalHouse) {
+      scheduleHouseReVisit(
+        reVisitModalHouse.id,
+        reVisitForm.engineerId || engineers[0]?.id,
+        reVisitForm.visitDate,
+        reVisitForm.visitTime,
+        reVisitForm.reason
+      );
+      setReVisitModalHouse(null);
     }
   };
 
@@ -175,6 +204,22 @@ export const HousesManagement = () => {
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
+            onClick={() => {
+              generateDomainPdf({
+                domain: 'CONSTRUCTION',
+                houses: filteredHouses,
+                districtFilter: districtFilter === 'ALL' ? 'All Punjab Districts' : districtFilter,
+                dateRange: 'All Stages'
+              });
+            }}
+            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-bold shadow-2xs hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-orange-600" />
+            <span>Export Houses (PDF)</span>
+          </button>
+
+          <button
             onClick={() => {
               if (filteredHouses.length > 0) {
                 setScheduleModalHouse(filteredHouses[0]);
@@ -199,6 +244,7 @@ export const HousesManagement = () => {
           { id: 'APPLICATIONS', label: 'Applications' },
           { id: 'APPROVED', label: 'Approved' },
           { id: 'UNDER_CONSTRUCTION', label: 'Under Construction' },
+          { id: 'REVISIT', label: 'Re-Visit Required' },
           { id: 'COMPLETED', label: 'Completed' },
           { id: 'REJECTED', label: 'Rejected' },
         ].map((tab) => {
@@ -384,6 +430,8 @@ export const HousesManagement = () => {
                             ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                             : h.status === 'Under Construction'
                             ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                            : h.status === 'Re-Visit' || h.reInspectionRequired
+                            ? 'bg-purple-100 text-purple-800 border border-purple-300'
                             : h.status === 'Approved'
                             ? 'bg-amber-50 text-amber-800 border border-amber-200'
                             : h.status === 'Rejected'
@@ -391,7 +439,7 @@ export const HousesManagement = () => {
                             : 'bg-slate-100 text-slate-700 border border-slate-200'
                         }`}
                       >
-                        {h.status}
+                        {h.status === 'Re-Visit' ? 'Re-Visit Req.' : h.status}
                       </span>
                     </td>
 
@@ -405,6 +453,25 @@ export const HousesManagement = () => {
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>
+
+                        {(h.status === 'Rejected' || h.status === 'Re-Visit' || h.reInspectionRequired) && (
+                          <button
+                            onClick={() => {
+                              setReVisitModalHouse(h);
+                              setReVisitForm({
+                                engineerId: h.engineerId || engineers[0]?.id || '',
+                                visitDate: new Date().toISOString().split('T')[0],
+                                visitTime: '11:00 AM',
+                                reason: h.revisitReason || 'Ghar ka re-inspection defect rectification audit',
+                              });
+                            }}
+                            className="px-2.5 py-1 rounded-xl bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 text-[10px] font-black transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                            title="Schedule Re-Visit for this house"
+                          >
+                            <RotateCcw className="h-3 w-3 text-purple-700" />
+                            <span>Re-Visit</span>
+                          </button>
+                        )}
 
                         {h.status === 'Pending' && (
                           <>
@@ -875,6 +942,124 @@ export const HousesManagement = () => {
                   className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-extrabold shadow-md transition"
                 >
                   Schedule Visit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          MODAL 5: SCHEDULE SITE RE-VISIT / RE-INSPECTION MODAL
+         ========================================================================= */}
+      {reVisitModalHouse && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full border border-purple-200 shadow-2xl p-6 space-y-4 animate-in fade-in">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-black">
+                  <RotateCcw className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-slate-900">
+                    Schedule Ghar Re-Visit & Audit
+                  </h2>
+                  <p className="text-xs text-purple-700 font-bold">
+                    House: {reVisitModalHouse.id} ({reVisitModalHouse.ownerName})
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setReVisitModalHouse(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-2xl text-xs text-purple-900 space-y-1">
+              <span className="font-black block">Re-Visit Inspection Purpose:</span>
+              <p className="text-purple-800 text-[11px]">
+                Yeh modal rejected ya defected houses ke liye engineer ko dobara site visit assign karta hai taake rectification check ki ja sakay aur house status update ho sake.
+              </p>
+            </div>
+
+            <form onSubmit={handleReVisitSubmit} className="space-y-3 text-xs">
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  Assign Field Engineer
+                </label>
+                <select
+                  value={reVisitForm.engineerId}
+                  onChange={(e) => setReVisitForm({ ...reVisitForm, engineerId: e.target.value })}
+                  required
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+                >
+                  {engineers.map((eng) => (
+                    <option key={eng.id} value={eng.id}>
+                      {eng.name} ({eng.pecNo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    Re-Visit Date
+                  </label>
+                  <input
+                    type="date"
+                    value={reVisitForm.visitDate}
+                    onChange={(e) => setReVisitForm({ ...reVisitForm, visitDate: e.target.value })}
+                    required
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                    Re-Visit Time
+                  </label>
+                  <input
+                    type="text"
+                    value={reVisitForm.visitTime}
+                    onChange={(e) => setReVisitForm({ ...reVisitForm, visitTime: e.target.value })}
+                    placeholder="11:00 AM"
+                    required
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                  Defect Rectification Checklist / Reason
+                </label>
+                <textarea
+                  value={reVisitForm.reason}
+                  onChange={(e) => setReVisitForm({ ...reVisitForm, reason: e.target.value })}
+                  placeholder="e.g. Verify corrected column alignment and steel bonding before passing..."
+                  rows={3}
+                  required
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setReVisitModalHouse(null)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-extrabold shadow-md transition flex items-center gap-1.5"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Confirm Re-Visit Schedule</span>
                 </button>
               </div>
             </form>

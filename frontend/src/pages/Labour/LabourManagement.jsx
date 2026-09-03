@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useDashboardData } from '../../context/DashboardDataContext';
+import { generateDomainPdf } from '../../utils/pdfGenerator';
 import {
   Users,
   HardHat,
@@ -24,7 +25,8 @@ import {
   List,
   MapPin,
   Phone,
-  GraduationCap
+  GraduationCap,
+  Download
 } from 'lucide-react';
 
 export const LabourManagement = () => {
@@ -150,13 +152,31 @@ export const LabourManagement = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsRecordSessionModalOpen(true)}
-          className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 flex items-center gap-2 transition cursor-pointer"
-        >
-          <BookOpen className="h-4 w-4" />
-          <span>Record Field Training</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              generateDomainPdf({
+                domain: 'LABOUR',
+                workers: filteredWorkers,
+                districtFilter: skillFilter === 'ALL' ? 'All Skills' : `${skillFilter} Artisans`,
+                dateRange: 'All Enrolled'
+              });
+            }}
+            className="px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-800 text-xs font-bold shadow-2xs hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-orange-600" />
+            <span>Export Labour Roster (PDF)</span>
+          </button>
+
+          <button
+            onClick={() => setIsRecordSessionModalOpen(true)}
+            className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 flex items-center gap-2 transition cursor-pointer"
+          >
+            <BookOpen className="h-4 w-4" />
+            <span>Record Field Training</span>
+          </button>
+        </div>
       </div>
 
       {/* Top 4 KPI Metrics */}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useDashboardData } from '../../context/DashboardDataContext';
+import { generateDomainPdf, generateEngineerVisitCertificatePdf } from '../../utils/pdfGenerator';
 import {
   ClipboardCheck,
   Calendar,
@@ -22,7 +23,8 @@ import {
   Camera,
   Cpu,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Download
 } from 'lucide-react';
 
 export const EngineerVisits = () => {
@@ -142,13 +144,32 @@ export const EngineerVisits = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsScheduleModalOpen(true)}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 flex items-center gap-1.5 transition cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Schedule New Visit</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              generateDomainPdf({
+                domain: 'ENGINEERS',
+                engineers,
+                visits: filteredVisits,
+                dateRange: 'All Visits',
+                districtFilter: 'All Divisions'
+              });
+            }}
+            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-bold shadow-2xs hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-orange-600" />
+            <span>Export Visits Log (PDF)</span>
+          </button>
+
+          <button
+            onClick={() => setIsScheduleModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-amber-700 text-white text-xs font-extrabold shadow-md shadow-orange-500/25 flex items-center gap-1.5 transition cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Schedule New Visit</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter Tabs */}
@@ -648,9 +669,19 @@ export const EngineerVisits = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedVisitReport(null)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
                 >
                   Close
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => generateEngineerVisitCertificatePdf(selectedVisitReport)}
+                  className="px-4 py-2 rounded-xl bg-orange-50 border border-orange-200 text-orange-800 hover:bg-orange-100 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                  title="Download verified official site inspection certificate PDF with stamps"
+                >
+                  <Download className="h-3.5 w-3.5 text-orange-600" />
+                  <span>Download Certificate (PDF)</span>
                 </button>
               </div>
 
@@ -658,7 +689,7 @@ export const EngineerVisits = () => {
                 <button
                   type="button"
                   onClick={() => setReInspectionModalVisit(selectedVisitReport)}
-                  className="px-4 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   <span>Request Re-Inspection</span>
@@ -671,7 +702,7 @@ export const EngineerVisits = () => {
                       approveVisitReport(selectedVisitReport.id);
                       setSelectedVisitReport({ ...selectedVisitReport, adminApproved: true });
                     }}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md transition flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md transition flex items-center gap-1.5 cursor-pointer"
                   >
                     <Check className="h-3.5 w-3.5" />
                     <span>Approve Inspection Report</span>

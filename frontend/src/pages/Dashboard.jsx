@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useDashboardData } from '../context/DashboardDataContext';
+import { generateDprPdf } from '../utils/pdfGenerator';
 import {
   Building2,
   Activity,
@@ -29,7 +30,9 @@ import {
   Wind,
   Check,
   ClipboardCheck,
-  Hammer
+  Hammer,
+  Download,
+  Printer
 } from 'lucide-react';
 
 export const Dashboard = () => {
@@ -93,7 +96,8 @@ export const Dashboard = () => {
     approved: houses.filter((h) => h.status === 'Approved').length,
     construction: houses.filter((h) => h.status === 'Under Construction').length,
     completed: houses.filter((h) => h.status === 'Completed').length,
-    rejected: houses.filter((h) => h.status === 'Rejected').length,
+    revisit: houses.filter((h) => h.status === 'Re-Visit' || h.reInspectionRequired).length,
+    rejected: houses.filter((h) => h.status === 'Rejected' && !h.reInspectionRequired).length,
   };
 
   // Helper for map pin colors
@@ -128,11 +132,24 @@ export const Dashboard = () => {
         <div className="flex items-center gap-2.5">
           <button
             type="button"
-            onClick={() => navigate('/reports')}
-            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-2xs hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+            onClick={() => {
+              generateDprPdf({
+                houses,
+                engineers,
+                visits,
+                workers,
+                safetyIssues,
+                loans,
+                date: new Date().toISOString().split('T')[0],
+                scope: 'Punjab Province (All Divisions)',
+                generatedBy: 'Muhammad Admin (Super Admin)'
+              });
+            }}
+            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-bold shadow-2xs hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+            title="Download full multi-page Daily Progress Report (PDF) with engineer visits and labour training roster"
           >
-            <FileText className="h-4 w-4 text-slate-500" />
-            <span>{t('reportBtn')}</span>
+            <Download className="h-4 w-4 text-orange-600" />
+            <span>Download DPR (PDF)</span>
           </button>
 
           <button
@@ -394,97 +411,119 @@ export const Dashboard = () => {
 
         {/* 2. House Status Donut Chart (3 cols) */}
         <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
-          <div>
-            <h2 className="text-sm font-black text-slate-900">House Status Distribution</h2>
-            <p className="text-[11px] text-slate-500">Application to Completion</p>
+          <div className="flex items-center justify-between pb-1">
+            <div>
+              <h2 className="text-sm font-black text-slate-900 tracking-tight">House Status</h2>
+              <p className="text-[11px] text-slate-400 font-medium">Lifecycle Distribution</p>
+            </div>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-700 border border-slate-200">
+              {totalHousesCount} Total
+            </span>
           </div>
 
           {/* Donut Chart Visual */}
-          <div className="py-3 flex flex-col items-center justify-center">
-            <div className="relative h-36 w-36 flex items-center justify-center">
+          <div className="py-2 flex flex-col items-center justify-center">
+            <div className="relative h-32 w-32 flex items-center justify-center">
               <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="14" fill="none" stroke="#f1f5f9" strokeWidth="4.5" />
-                {/* Completed (Green) */}
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="14"
-                  fill="none"
-                  stroke="#10b981"
-                  strokeWidth="4.5"
-                  strokeDasharray={`${(statusCounts.completed / totalHousesCount) * 100} 100`}
-                  strokeDashoffset="0"
-                />
-                {/* Under Construction (Blue) */}
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="14"
-                  fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth="4.5"
-                  strokeDasharray={`${(statusCounts.construction / totalHousesCount) * 100} 100`}
-                  strokeDashoffset={`-${(statusCounts.completed / totalHousesCount) * 100}`}
-                />
-                {/* Approved (Amber) */}
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="14"
-                  fill="none"
-                  stroke="#f59e0b"
-                  strokeWidth="4.5"
-                  strokeDasharray={`${(statusCounts.approved / totalHousesCount) * 100} 100`}
-                  strokeDashoffset={`-${((statusCounts.completed + statusCounts.construction) / totalHousesCount) * 100}`}
-                />
-                {/* Rejected (Red) */}
-                <circle
-                  cx="18"
-                  cy="18"
-                  r="14"
-                  fill="none"
-                  stroke="#f43f5e"
-                  strokeWidth="4.5"
-                  strokeDasharray={`${(statusCounts.rejected / totalHousesCount) * 100} 100`}
-                  strokeDashoffset={`-${((statusCounts.completed + statusCounts.construction + statusCounts.approved) / totalHousesCount) * 100}`}
-                />
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#f1f5f9" strokeWidth="4.2" />
+                {/* 1. Completed (Green) */}
+                {statusCounts.completed > 0 && (
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="4.2"
+                    strokeDasharray={`${(statusCounts.completed / (totalHousesCount || 1)) * 100} 100`}
+                    strokeDashoffset="0"
+                  />
+                )}
+                {/* 2. Under Construction (Blue) */}
+                {statusCounts.construction > 0 && (
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="4.2"
+                    strokeDasharray={`${(statusCounts.construction / (totalHousesCount || 1)) * 100} 100`}
+                    strokeDashoffset={`-${(statusCounts.completed / (totalHousesCount || 1)) * 100}`}
+                  />
+                )}
+                {/* 3. Re-Visit Required (Purple) */}
+                {statusCounts.revisit > 0 && (
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="#8b5cf6"
+                    strokeWidth="4.2"
+                    strokeDasharray={`${(statusCounts.revisit / (totalHousesCount || 1)) * 100} 100`}
+                    strokeDashoffset={`-${((statusCounts.completed + statusCounts.construction) / (totalHousesCount || 1)) * 100}`}
+                  />
+                )}
+                {/* 4. Approved (Amber) */}
+                {statusCounts.approved > 0 && (
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="4.2"
+                    strokeDasharray={`${(statusCounts.approved / (totalHousesCount || 1)) * 100} 100`}
+                    strokeDashoffset={`-${((statusCounts.completed + statusCounts.construction + statusCounts.revisit) / (totalHousesCount || 1)) * 100}`}
+                  />
+                )}
+                {/* 5. Rejected (Rose) */}
+                {statusCounts.rejected > 0 && (
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="14"
+                    fill="none"
+                    stroke="#f43f5e"
+                    strokeWidth="4.2"
+                    strokeDasharray={`${(statusCounts.rejected / (totalHousesCount || 1)) * 100} 100`}
+                    strokeDashoffset={`-${((statusCounts.completed + statusCounts.construction + statusCounts.revisit + statusCounts.approved) / (totalHousesCount || 1)) * 100}`}
+                  />
+                )}
               </svg>
-              <div className="absolute text-center">
-                <span className="text-xl font-black text-slate-900 block">{totalHousesCount}</span>
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Total</span>
+              <div className="absolute text-center flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-xl font-black text-slate-900 leading-none">{totalHousesCount}</span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Total</span>
               </div>
             </div>
 
-            {/* Status Legend */}
-            <div className="w-full mt-3 space-y-1.5 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-slate-600 font-bold">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span>Completed</span>
-                </span>
-                <span className="font-mono font-bold text-slate-900">{statusCounts.completed}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-slate-600 font-bold">
-                  <span className="h-2 w-2 rounded-full bg-blue-500" />
-                  <span>Under Const.</span>
-                </span>
-                <span className="font-mono font-bold text-slate-900">{statusCounts.construction}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-slate-600 font-bold">
-                  <span className="h-2 w-2 rounded-full bg-amber-500" />
-                  <span>Approved</span>
-                </span>
-                <span className="font-mono font-bold text-slate-900">{statusCounts.approved}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-slate-600 font-bold">
-                  <span className="h-2 w-2 rounded-full bg-rose-500" />
-                  <span>Rejected</span>
-                </span>
-                <span className="font-mono font-bold text-slate-900">{statusCounts.rejected}</span>
-              </div>
+            {/* Status Legend List */}
+            <div className="w-full mt-2 space-y-0.5 text-xs">
+              {[
+                { key: 'completed', label: 'Completed', count: statusCounts.completed, color: 'bg-emerald-500', tab: 'COMPLETED' },
+                { key: 'construction', label: 'Under Const.', count: statusCounts.construction, color: 'bg-blue-500', tab: 'UNDER_CONSTRUCTION' },
+                { key: 'revisit', label: 'Re-Visit Req.', count: statusCounts.revisit, color: 'bg-purple-500', tab: 'REVISIT' },
+                { key: 'approved', label: 'Approved', count: statusCounts.approved, color: 'bg-amber-500', tab: 'APPROVED' },
+                { key: 'rejected', label: 'Rejected', count: statusCounts.rejected, color: 'bg-rose-500', tab: 'REJECTED' },
+              ].map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => navigate(`/houses?tab=${item.tab}`)}
+                  className="w-full flex items-center justify-between px-2 py-1 rounded-lg hover:bg-slate-50 transition duration-150 cursor-pointer group"
+                >
+                  <span className="flex items-center gap-2 text-xs font-bold text-slate-600 group-hover:text-slate-900">
+                    <span className={`h-2 w-2 rounded-full ${item.color}`} />
+                    <span>{item.label}</span>
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono font-black text-xs text-slate-900 group-hover:text-orange-700 transition">
+                      {item.count}
+                    </span>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>

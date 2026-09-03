@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useDashboardData } from '../../context/DashboardDataContext';
+import { generateDomainPdf } from '../../utils/pdfGenerator';
 import {
   ShieldAlert,
   AlertTriangle,
@@ -20,7 +21,8 @@ import {
   MapPin,
   Clock,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Download
 } from 'lucide-react';
 
 export const SafetyManagement = () => {
@@ -140,13 +142,31 @@ export const SafetyManagement = () => {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsLogViolationModalOpen(true)}
-          className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-600 via-orange-600 to-rose-700 hover:from-rose-700 hover:to-orange-700 text-white text-xs font-extrabold shadow-md shadow-rose-500/25 flex items-center gap-2 transition cursor-pointer"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Log Safety Incident</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              generateDomainPdf({
+                domain: 'SAFETY',
+                safetyIssues: filteredIssues,
+                districtFilter: activeSeverity === 'ALL' ? 'All Severity Levels' : `${activeSeverity} Severity`,
+                dateRange: 'All Open & Closed'
+              });
+            }}
+            className="px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-800 text-xs font-bold shadow-2xs hover:bg-slate-50 transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <Download className="h-4 w-4 text-rose-600" />
+            <span>Export Safety Dossier (PDF)</span>
+          </button>
+
+          <button
+            onClick={() => setIsLogViolationModalOpen(true)}
+            className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-rose-600 via-orange-600 to-rose-700 hover:from-rose-700 hover:to-orange-700 text-white text-xs font-extrabold shadow-md shadow-rose-500/25 flex items-center gap-2 transition cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Log Safety Incident</span>
+          </button>
+        </div>
       </div>
 
       {/* Top 4 KPI Metrics */}

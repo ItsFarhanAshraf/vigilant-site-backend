@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useDashboardData } from '../../context/DashboardDataContext';
+import { generateDomainPdf } from '../../utils/pdfGenerator';
 import {
   CreditCard,
   Building2,
@@ -180,8 +181,8 @@ export const LoanManagement = () => {
         })}
       </div>
 
-      {/* Search Toolbar */}
-      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs flex items-center justify-between">
+      {/* Search & Export Toolbar */}
+      <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="h-4 w-4 text-slate-400 absolute left-3 top-2.5" />
           <input
@@ -192,6 +193,22 @@ export const LoanManagement = () => {
             className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 transition"
           />
         </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            generateDomainPdf({
+              domain: 'LOANS',
+              loans: filteredLoans,
+              districtFilter: 'All Divisions',
+              dateRange: 'BOP Subsidized Housing Financing'
+            });
+          }}
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs font-black shadow-md transition flex items-center gap-1.5 cursor-pointer self-end sm:self-auto"
+        >
+          <Download className="h-4 w-4" />
+          <span>Export BOP Statement (PDF)</span>
+        </button>
       </div>
 
       {/* Loans Table */}

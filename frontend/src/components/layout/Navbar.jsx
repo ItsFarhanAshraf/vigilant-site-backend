@@ -27,13 +27,31 @@ import {
 export const Navbar = () => {
   const { user, logout, quickLogin, role } = useAuth();
   const { t, isRTL } = useLanguage();
-  const { notifications, markNotificationRead, markAllNotificationsRead, houses } = useDashboardData();
+  const {
+    notifications,
+    markNotificationRead,
+    markAllNotificationsRead,
+    houses,
+    engineers,
+    visits,
+    workers,
+    safetyIssues,
+    loans
+  } = useDashboardData();
   const navigate = useNavigate();
 
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState({
+    houses: [],
+    engineers: [],
+    workers: [],
+    visits: [],
+    safety: [],
+    loans: [],
+    totalCount: 0
+  });
   const [searchOpen, setSearchOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
 
@@ -43,25 +61,84 @@ export const Navbar = () => {
 
   const unreadCount = notifications?.filter((n) => n.unread)?.length || 0;
 
-  // Search filter
+  // Multi-Entity Global Search filter
   useEffect(() => {
     if (searchQuery.trim().length > 1) {
       const q = searchQuery.toLowerCase();
-      const matched = houses.filter(
+
+      const matchedHouses = (houses || []).filter(
         (h) =>
           h.id.toLowerCase().includes(q) ||
           h.ownerName.toLowerCase().includes(q) ||
           h.ownerCnic.toLowerCase().includes(q) ||
           h.district.toLowerCase().includes(q) ||
           h.division.toLowerCase().includes(q)
-      );
-      setSearchResults(matched.slice(0, 5));
+      ).slice(0, 3);
+
+      const matchedEngineers = (engineers || []).filter(
+        (e) =>
+          e.name.toLowerCase().includes(q) ||
+          e.pecNo.toLowerCase().includes(q) ||
+          e.assignedDivision.toLowerCase().includes(q) ||
+          e.phone.toLowerCase().includes(q)
+      ).slice(0, 3);
+
+      const matchedWorkers = (workers || []).filter(
+        (w) =>
+          w.id.toLowerCase().includes(q) ||
+          w.name.toLowerCase().includes(q) ||
+          w.skill.toLowerCase().includes(q) ||
+          w.assignedHouseId.toLowerCase().includes(q)
+      ).slice(0, 3);
+
+      const matchedVisits = (visits || []).filter(
+        (v) =>
+          v.id.toLowerCase().includes(q) ||
+          v.engineerName.toLowerCase().includes(q) ||
+          v.houseId.toLowerCase().includes(q) ||
+          v.stage.toLowerCase().includes(q)
+      ).slice(0, 3);
+
+      const matchedSafety = (safetyIssues || []).filter(
+        (s) =>
+          s.id.toLowerCase().includes(q) ||
+          s.houseId.toLowerCase().includes(q) ||
+          s.issueType.toLowerCase().includes(q) ||
+          s.severity.toLowerCase().includes(q)
+      ).slice(0, 2);
+
+      const matchedLoans = (loans || []).filter(
+        (l) =>
+          l.id.toLowerCase().includes(q) ||
+          l.applicant.toLowerCase().includes(q) ||
+          l.houseId.toLowerCase().includes(q)
+      ).slice(0, 2);
+
+      const total = matchedHouses.length + matchedEngineers.length + matchedWorkers.length + matchedVisits.length + matchedSafety.length + matchedLoans.length;
+
+      setSearchResults({
+        houses: matchedHouses,
+        engineers: matchedEngineers,
+        workers: matchedWorkers,
+        visits: matchedVisits,
+        safety: matchedSafety,
+        loans: matchedLoans,
+        totalCount: total
+      });
       setSearchOpen(true);
     } else {
-      setSearchResults([]);
+      setSearchResults({
+        houses: [],
+        engineers: [],
+        workers: [],
+        visits: [],
+        safety: [],
+        loans: [],
+        totalCount: 0
+      });
       setSearchOpen(false);
     }
-  }, [searchQuery, houses]);
+  }, [searchQuery, houses, engineers, workers, visits, safetyIssues, loans]);
 
   // Click outside listener
   useEffect(() => {
@@ -129,43 +206,175 @@ export const Navbar = () => {
       {/* Right Controls */}
       <div className="flex items-center gap-2.5 md:gap-4">
         {/* Global Search Bar */}
-        <div className="relative hidden md:block w-64 lg:w-80" ref={searchRef}>
+        <div className="relative hidden md:block w-72 lg:w-96" ref={searchRef}>
           <Search className={`h-4 w-4 text-slate-400 absolute ${isRTL ? 'right-3' : 'left-3'} top-2.5`} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('searchPlaceholder')}
-            className={`w-full ${isRTL ? 'pr-9 pl-3 text-right' : 'pl-9 pr-3'} py-1.5 text-xs bg-slate-50 border border-slate-200/90 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 transition`}
+            placeholder="Search houses, engineers, workers, visits, loans..."
+            className={`w-full ${isRTL ? 'pr-9 pl-3 text-right' : 'pl-9 pr-8'} py-1.5 text-xs bg-slate-50 border border-slate-200/90 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 transition`}
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-2 text-slate-400 hover:text-slate-600 text-xs font-bold`}
+            >
+              ✕
+            </button>
+          )}
 
-          {/* Search Results Dropdown */}
-          {searchOpen && searchResults.length > 0 && (
-            <div className={`absolute ${isRTL ? 'right-0' : 'left-0'} mt-2 w-full rounded-2xl bg-white p-2 shadow-2xl border border-slate-200 z-50 animate-in fade-in`}>
-              <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                Matching Houses ({searchResults.length})
-              </div>
-              <div className="space-y-1 mt-1">
-                {searchResults.map((h) => (
-                  <button
-                    key={h.id}
-                    onClick={() => {
-                      setSearchOpen(false);
-                      setSearchQuery('');
-                      navigate(`/houses?highlight=${h.id}`);
-                    }}
-                    className="w-full text-left p-2 rounded-xl hover:bg-orange-50 transition flex items-center justify-between cursor-pointer"
-                  >
+          {/* Categorized Search Results Dropdown */}
+          {searchOpen && (
+            <div className={`absolute ${isRTL ? 'right-0' : 'left-0'} mt-2 w-full max-h-[75vh] overflow-y-auto rounded-2xl bg-white p-2.5 shadow-2xl border border-slate-200 z-50 animate-in fade-in space-y-2`}>
+              {searchResults.totalCount === 0 ? (
+                <div className="p-4 text-center text-slate-400 text-xs font-bold">
+                  No records found matching "{searchQuery}"
+                </div>
+              ) : (
+                <>
+                  {/* Houses Section */}
+                  {searchResults.houses.length > 0 && (
                     <div>
-                      <div className="text-xs font-black text-slate-900">{h.id} — {h.ownerName}</div>
-                      <div className="text-[10px] text-slate-500">{h.district}, {h.division} • {h.stage}</div>
+                      <div className="px-2 py-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400">
+                        Houses ({searchResults.houses.length})
+                      </div>
+                      {searchResults.houses.map((h) => (
+                        <button
+                          key={h.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                            navigate(`/houses?highlight=${h.id}`);
+                          }}
+                          className="w-full text-left p-2 rounded-xl hover:bg-orange-50/80 transition flex items-center justify-between cursor-pointer group"
+                        >
+                          <div>
+                            <div className="text-xs font-black text-slate-900 group-hover:text-orange-900">{h.id} — {h.ownerName}</div>
+                            <div className="text-[10px] text-slate-500">{h.district}, {h.division} • {h.stage}</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            {h.progressPct}%
+                          </span>
+                        </button>
+                      ))}
                     </div>
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
-                      {h.progressPct}%
-                    </span>
-                  </button>
-                ))}
-              </div>
+                  )}
+
+                  {/* Engineers Section */}
+                  {searchResults.engineers.length > 0 && (
+                    <div className="pt-1 border-t border-slate-100">
+                      <div className="px-2 py-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400">
+                        Field Engineers ({searchResults.engineers.length})
+                      </div>
+                      {searchResults.engineers.map((e) => (
+                        <button
+                          key={e.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                            navigate(`/engineers`);
+                          }}
+                          className="w-full text-left p-2 rounded-xl hover:bg-orange-50/80 transition flex items-center justify-between cursor-pointer group"
+                        >
+                          <div>
+                            <div className="text-xs font-black text-slate-900 group-hover:text-orange-900">{e.name}</div>
+                            <div className="text-[10px] text-slate-500">{e.pecNo} • Division: {e.assignedDivision}</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-purple-50 text-purple-800 border border-purple-200">
+                            {e.completedVisits} Visits
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Labour / Workers Section */}
+                  {searchResults.workers.length > 0 && (
+                    <div className="pt-1 border-t border-slate-100">
+                      <div className="px-2 py-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400">
+                        Artisans & Labour ({searchResults.workers.length})
+                      </div>
+                      {searchResults.workers.map((w) => (
+                        <button
+                          key={w.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                            navigate(`/labour`);
+                          }}
+                          className="w-full text-left p-2 rounded-xl hover:bg-orange-50/80 transition flex items-center justify-between cursor-pointer group"
+                        >
+                          <div>
+                            <div className="text-xs font-black text-slate-900 group-hover:text-orange-900">{w.name} ({w.id})</div>
+                            <div className="text-[10px] text-slate-500">{w.skill} • Assigned: {w.assignedHouseId}</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-teal-50 text-teal-800 border border-teal-200">
+                            {w.trainingStatus}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Inspections / Visits Section */}
+                  {searchResults.visits.length > 0 && (
+                    <div className="pt-1 border-t border-slate-100">
+                      <div className="px-2 py-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400">
+                        Engineer Visits ({searchResults.visits.length})
+                      </div>
+                      {searchResults.visits.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                            navigate(`/engineer-visits`);
+                          }}
+                          className="w-full text-left p-2 rounded-xl hover:bg-orange-50/80 transition flex items-center justify-between cursor-pointer group"
+                        >
+                          <div>
+                            <div className="text-xs font-black text-slate-900 group-hover:text-orange-900">{v.id} — {v.engineerName}</div>
+                            <div className="text-[10px] text-slate-500">Site: {v.houseId} • {v.stage}</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-50 text-amber-800 border border-amber-200">
+                            {v.status}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Safety Issues Section */}
+                  {searchResults.safety.length > 0 && (
+                    <div className="pt-1 border-t border-slate-100">
+                      <div className="px-2 py-0.5 text-[9.5px] font-black uppercase tracking-wider text-slate-400">
+                        Safety Incidents ({searchResults.safety.length})
+                      </div>
+                      {searchResults.safety.map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => {
+                            setSearchOpen(false);
+                            setSearchQuery('');
+                            navigate(`/safety`);
+                          }}
+                          className="w-full text-left p-2 rounded-xl hover:bg-orange-50/80 transition flex items-center justify-between cursor-pointer group"
+                        >
+                          <div>
+                            <div className="text-xs font-black text-slate-900 group-hover:text-orange-900">{s.id} — {s.issueType}</div>
+                            <div className="text-[10px] text-slate-500">Site: {s.houseId} • {s.assignedEngineer}</div>
+                          </div>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-50 text-rose-700 border border-rose-200">
+                            {s.severity}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>
