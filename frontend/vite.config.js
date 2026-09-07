@@ -22,6 +22,7 @@ export default defineConfig({
     proxy: {
       '/auth': createProxyRule(),
       '/users': createProxyRule(),
+      '/engineers': createProxyRule(),
       '/projects': createProxyRule(),
       '/compliance': createProxyRule(),
       '/review': createProxyRule(),

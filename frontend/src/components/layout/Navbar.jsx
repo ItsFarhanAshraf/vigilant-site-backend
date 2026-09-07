@@ -77,11 +77,17 @@ export const Navbar = () => {
 
       const matchedEngineers = (engineers || []).filter(
         (e) =>
-          e.name.toLowerCase().includes(q) ||
-          e.pecNo.toLowerCase().includes(q) ||
-          e.assignedDivision.toLowerCase().includes(q) ||
-          e.phone.toLowerCase().includes(q)
-      ).slice(0, 3);
+          (e.name || '').toLowerCase().includes(q) ||
+          (e.pecNo || '').toLowerCase().includes(q) ||
+          (e.assignedDivision || '').toLowerCase().includes(q) ||
+          (e.assignedDistrict || '').toLowerCase().includes(q) ||
+          (e.contact || '').toLowerCase().includes(q) ||
+          (e.phone || '').toLowerCase().includes(q) ||
+          (e.email || '').toLowerCase().includes(q) ||
+          (e.degree16 || '').toLowerCase().includes(q) ||
+          (e.degree18 || '').toLowerCase().includes(q) ||
+          (e.cnic || '').toLowerCase().includes(q)
+      ).slice(0, 5);
 
       const matchedWorkers = (workers || []).filter(
         (w) =>
@@ -212,6 +218,12 @@ export const Navbar = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchQuery.trim()) {
+                setSearchOpen(false);
+                navigate(`/engineers?search=${encodeURIComponent(searchQuery.trim())}`);
+              }
+            }}
             placeholder="Search houses, engineers, workers, visits, loans..."
             className={`w-full ${isRTL ? 'pr-9 pl-3 text-right' : 'pl-9 pr-8'} py-1.5 text-xs bg-slate-50 border border-slate-200/90 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 transition`}
           />
@@ -273,17 +285,18 @@ export const Navbar = () => {
                           key={e.id}
                           onClick={() => {
                             setSearchOpen(false);
+                            const qVal = (e.name || '').replace(/^Engr\.\s*/i, '').trim() || e.name;
                             setSearchQuery('');
-                            navigate(`/engineers`);
+                            navigate(`/engineers?search=${encodeURIComponent(qVal)}`);
                           }}
                           className="w-full text-left p-2 rounded-xl hover:bg-orange-50/80 transition flex items-center justify-between cursor-pointer group"
                         >
                           <div>
                             <div className="text-xs font-black text-slate-900 group-hover:text-orange-900">{e.name}</div>
-                            <div className="text-[10px] text-slate-500">{e.pecNo} • Division: {e.assignedDivision}</div>
+                            <div className="text-[10px] text-slate-500">{e.pecNo} • {e.assignedDivision}{e.assignedDistrict ? ` (${e.assignedDistrict})` : ''}</div>
                           </div>
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-purple-50 text-purple-800 border border-purple-200">
-                            {e.completedVisits} Visits
+                            {e.completedVisits || 0} Visits
                           </span>
                         </button>
                       ))}

@@ -274,27 +274,37 @@ export const HousesManagement = () => {
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-3xl border border-slate-200/80 shadow-2xs">
         <div className="relative w-full sm:w-80">
-          <Search className="h-4 w-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by ID, owner, CNIC, engineer..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 transition"
+            className="w-full pl-10 pr-9 py-2 text-xs bg-slate-50/80 border border-slate-200/90 rounded-2xl focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-600 text-slate-800 font-medium placeholder:text-slate-400 transition"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+              title="Clear search"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
-            <Filter className="h-3.5 w-3.5" />
+            <Filter className="h-3.5 w-3.5 text-orange-600" />
             <span>District:</span>
           </div>
           <select
             value={districtFilter}
             onChange={(e) => setDistrictFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 cursor-pointer"
+            className="px-3.5 py-2 text-xs bg-slate-50/80 border border-slate-200/90 rounded-2xl text-slate-800 font-bold focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-600 cursor-pointer transition shadow-2xs"
           >
             <option value="ALL">All Districts</option>
             {districtsList.map((d) => (

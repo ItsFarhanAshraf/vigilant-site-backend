@@ -4,10 +4,7 @@ import { authApi } from '../api/endpoints';
 const AuthContext = createContext(null);
 
 export const TEST_USERS = [
-  { role: 'ADMIN', label: 'Admin (Harram / Supervisor)', username: 'admin', password: 'admin123', badge: 'bg-purple-100 text-purple-800' },
-  { role: 'BACKEND_REVIEW_ENGINEER', label: 'Backend Review Engineer', username: 'reviewer1', password: 'reviewer123', badge: 'bg-blue-100 text-blue-800' },
-  { role: 'FIELD_ENGINEER', label: 'Field Engineer (Shoaib)', username: 'engineer1', password: 'engineer123', badge: 'bg-emerald-100 text-emerald-800' },
-  { role: 'HOUSE_OWNER', label: 'House Owner (Beneficiary)', username: 'owner1', password: 'owner123', badge: 'bg-amber-100 text-amber-800' },
+  { role: 'ADMIN', label: 'Admin (Harram / Supervisor)', username: 'admin', password: 'admin', badge: 'bg-purple-100 text-purple-800' },
 ];
 
 export const AuthProvider = ({ children }) => {

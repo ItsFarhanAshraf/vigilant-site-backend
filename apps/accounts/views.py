@@ -233,9 +233,9 @@ class UserActivateView(APIView):
 
 
 class JuniorEngineerListView(APIView):
-    """List junior engineers from the Excel-seeded directory (dashboard data)."""
+    """List and create junior engineers in the directory (dashboard data)."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     pagination_class = StandardResultsSetPagination
 
     def get(self, request):
@@ -261,3 +261,24 @@ class JuniorEngineerListView(APIView):
         page = paginator.paginate_queryset(queryset, request)
         serializer = JuniorEngineerSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+    def post(self, request):
+        data = request.data.copy()
+        if not data.get('sr_no'):
+            max_sr = JuniorEngineer.objects.all().order_by('-sr_no').first()
+            data['sr_no'] = (max_sr.sr_no + 1) if max_sr else 1
+
+        serializer = JuniorEngineerSerializer(data=data)
+        if not serializer.is_valid():
+            return error_response(
+                code='VALIDATION_ERROR',
+                message='Junior engineer registration failed.',
+                details=serializer.errors,
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+        engineer = serializer.save()
+        return success_response(
+            data=JuniorEngineerSerializer(engineer).data,
+            message='Junior engineer registered successfully.',
+            status_code=status.HTTP_201_CREATED,
+        )

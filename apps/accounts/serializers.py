@@ -147,4 +147,4 @@ class JuniorEngineerSerializer(serializers.ModelSerializer):
             'degree_16', 'degree_18', 'division', 'assigned_district',
             'is_active', 'created_at',
         )
-        read_only_fields = fields
+        read_only_fields = ('id', 'created_at')

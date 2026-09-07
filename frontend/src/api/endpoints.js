@@ -17,6 +17,13 @@ export const usersApi = {
   deactivateUser: (id) => apiClient.delete(`/users/${id}/`),
 };
 
+// ==================== JUNIOR ENGINEERS ====================
+export const engineersApi = {
+  getEngineers: (params) => apiClient.get('/engineers/', { params }),
+  createEngineer: (data) => apiClient.post('/engineers/', data),
+};
+
+
 // ==================== PROJECTS ====================
 export const projectsApi = {
   getProjects: (params) => apiClient.get('/projects/', { params }),

@@ -151,12 +151,9 @@ export const Login = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 gap-2.5">
               {[
-                { role: 'ADMIN', label: t('adminRole'), username: 'admin', password: 'admin123', bg: 'hover:bg-emerald-50/70 hover:border-emerald-300' },
-                { role: 'BACKEND_REVIEW_ENGINEER', label: t('reviewerRole'), username: 'reviewer1', password: 'reviewer123', bg: 'hover:bg-emerald-50/70 hover:border-emerald-300' },
-                { role: 'FIELD_ENGINEER', label: t('engineerRole'), username: 'engineer1', password: 'engineer123', bg: 'hover:bg-emerald-50/70 hover:border-emerald-300' },
-                { role: 'HOUSE_OWNER', label: t('ownerRole'), username: 'owner1', password: 'owner123', bg: 'hover:bg-emerald-50/70 hover:border-emerald-300' },
+                { role: 'ADMIN', label: t('adminRole') || 'Administrator', username: 'admin', password: 'admin', bg: 'hover:bg-emerald-50/70 hover:border-emerald-300' },
               ].map((u) => (
                 <button
                   key={u.role}

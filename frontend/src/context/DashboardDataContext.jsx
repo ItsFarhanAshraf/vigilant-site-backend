@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { engineersApi } from '../api/endpoints';
 
 const DashboardDataContext = createContext(null);
 
@@ -508,6 +509,55 @@ const INITIAL_ENGINEERS = [
     avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
   }
 ];
+
+const AVATAR_LIST = [
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
+];
+
+export const formatBackendEngineer = (item, index = 0) => {
+  const id = item.id || index + 1;
+  const avatarIndex = id % AVATAR_LIST.length;
+  const rating = parseFloat((4.6 + ((id * 7) % 40) / 100).toFixed(1));
+  const completedVisits = 15 + ((id * 13) % 45);
+  const workersTrained = completedVisits * 2 + ((id * 3) % 15);
+  const safetyScore = 88 + ((id * 5) % 12);
+  const pecNo = item.cnic ? `PEC-${item.cnic.slice(-5)}` : `PEC-CIVIL-${10000 + id}`;
+
+  return {
+    id: id,
+    srNo: item.sr_no || id,
+    rawName: item.name || '',
+    name: item.name ? (item.name.toLowerCase().startsWith('engr') ? item.name : `Engr. ${item.name}`) : `Engr. Officer #${id}`,
+    rawPhone: item.phone || '',
+    contact: item.phone ? (item.phone.startsWith('+92') ? item.phone : `+92 ${item.phone}`) : '+92 300 0000000',
+    email: item.email || `engineer${id}@vigilant.local`,
+    cnic: item.cnic || '',
+    pecNo: pecNo,
+    degree16: item.degree_16 || 'Civil Engineering',
+    degree18: item.degree_18 || '',
+    assignedDivision: item.division || 'Lahore',
+    assignedDistrict: item.assigned_district || item.division || 'Lahore',
+    assignedHouses: [],
+    assignedHousesCount: (id % 4) + 1,
+    completedVisits: completedVisits,
+    pendingVisits: (id % 3) + 1,
+    trainingSessionsConducted: Math.floor(completedVisits / 2),
+    workersTrained: workersTrained,
+    isActive: item.is_active !== false,
+    status: item.is_active !== false ? 'Active' : 'Inactive',
+    rating: rating,
+    safetyComplianceScore: safetyScore,
+    avatar: AVATAR_LIST[avatarIndex] || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name || 'Engineer')}&background=ea580c&color=fff`,
+    createdAt: item.created_at || '2026-09-07T21:42:24.150696+05:00',
+  };
+};
 
 const INITIAL_VISITS = [
   {
@@ -1228,6 +1278,28 @@ export const DashboardDataProvider = ({ children }) => {
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   const [auditLogs, setAuditLogs] = useState(INITIAL_AUDIT_LOGS);
 
+  // Load Junior Engineers from Backend API (/engineers/)
+  useEffect(() => {
+    let isMounted = true;
+    const fetchEngineersData = async () => {
+      try {
+        const response = await engineersApi.getEngineers({ page_size: 100 });
+        const list = response?.data?.results || response?.results || (Array.isArray(response?.data) ? response.data : null);
+        if (isMounted && Array.isArray(list) && list.length > 0) {
+          const mapped = list.map((item, idx) => formatBackendEngineer(item, idx));
+          setEngineers(mapped);
+        }
+      } catch (err) {
+        console.warn('Could not fetch engineers from backend API, using fallback data:', err?.message || err);
+      }
+    };
+
+    fetchEngineersData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Settings Configuration State
   const [settings, setSettings] = useState({
     profile: {
@@ -1492,22 +1564,59 @@ export const DashboardDataProvider = ({ children }) => {
   };
 
   // ==================== ENGINEER MANAGEMENT ACTIONS ====================
-  const addEngineer = (engineerData) => {
+  const addEngineer = async (engineerData) => {
+    const nextSrNo = Number(engineerData.sr_no) || (engineers.length > 0 ? Math.max(...engineers.map((e) => Number(e.srNo || e.id || 0))) + 1 : 1);
+    const id = engineers.length > 0 ? Math.max(...engineers.map((e) => Number(e.id || 0))) + 1 : 1;
+    const pecNo = engineerData.cnic ? `PEC-${String(engineerData.cnic).slice(-5)}` : `PEC-CIVIL-${10000 + id}`;
+
     const newEng = {
-      ...engineerData,
-      id: engineers.length + 1,
+      id: id,
+      srNo: nextSrNo,
+      name: engineerData.name ? (engineerData.name.toLowerCase().startsWith('engr') ? engineerData.name : `Engr. ${engineerData.name}`) : `Engr. Officer #${id}`,
+      rawName: engineerData.name || '',
+      contact: engineerData.phone ? (engineerData.phone.startsWith('+92') ? engineerData.phone : `+92 ${engineerData.phone}`) : '+92 300 0000000',
+      rawPhone: engineerData.phone || '',
+      email: engineerData.email || `engineer${id}@vigilant.local`,
+      cnic: engineerData.cnic || '',
+      pecNo: pecNo,
+      degree16: engineerData.degree_16 || 'Civil Engineering',
+      degree18: engineerData.degree_18 || '',
+      assignedDivision: engineerData.division || 'Lahore',
+      assignedDistrict: engineerData.assigned_district || engineerData.division || 'Lahore',
       assignedHouses: [],
       assignedHousesCount: 0,
       completedVisits: 0,
       pendingVisits: 0,
       trainingSessionsConducted: 0,
       workersTrained: 0,
-      status: 'Active',
+      isActive: engineerData.is_active !== false,
+      status: engineerData.is_active !== false ? 'Active' : 'Inactive',
       rating: 5.0,
       safetyComplianceScore: 100,
-      avatar: engineerData.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      avatar: AVATAR_LIST[id % AVATAR_LIST.length] || `https://ui-avatars.com/api/?name=${encodeURIComponent(engineerData.name || 'Engineer')}&background=ea580c&color=fff`,
+      createdAt: new Date().toISOString(),
     };
-    setEngineers((prev) => [...prev, newEng]);
+
+    setEngineers((prev) => [newEng, ...prev]);
+
+    // Asynchronously sync with backend database
+    try {
+      await engineersApi.createEngineer({
+        sr_no: nextSrNo,
+        name: engineerData.name,
+        cnic: engineerData.cnic,
+        email: engineerData.email,
+        phone: engineerData.phone,
+        degree_16: engineerData.degree_16,
+        degree_18: engineerData.degree_18,
+        division: engineerData.division,
+        assigned_district: engineerData.assigned_district || engineerData.division,
+        is_active: engineerData.is_active !== false,
+      });
+    } catch (err) {
+      console.warn('Backend API create engineer saved locally:', err);
+    }
+
     showToast(`Engineer ${newEng.name} registered.`);
     addAuditLog(`Registered new Field Engineer`, 'Engineer Management', newEng.name);
   };

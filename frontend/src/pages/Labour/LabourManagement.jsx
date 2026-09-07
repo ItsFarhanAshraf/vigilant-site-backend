@@ -258,39 +258,54 @@ export const LabourManagement = () => {
       {activeTab === 'WORKERS' && (
         <div className="space-y-4">
           {/* Toolbar */}
-          <div className="bg-white p-3.5 rounded-3xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="relative w-full sm:w-80">
-              <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-2.5" />
+          <div className="bg-white p-3.5 rounded-3xl border border-slate-200/80 shadow-2xs space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
+            {/* Left: Search Input */}
+            <div className="relative w-full lg:w-72 xl:w-80 shrink-0">
+              <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search worker by name, skill, house..."
-                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800 font-medium transition"
+                className="w-full pl-10 pr-9 py-2 text-xs bg-slate-50/80 border border-slate-200/90 rounded-2xl focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-600 text-slate-800 font-medium placeholder:text-slate-400 transition"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end overflow-x-auto pb-1 sm:pb-0">
-              <div className="flex items-center gap-1.5">
-                {['ALL', ...skillsList].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSkillFilter(s)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
-                      skillFilter === s
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    {s === 'ALL' ? 'All Trades' : s}
-                  </button>
-                ))}
+            {/* Right: Filter Chips & View Mode Buttons */}
+            <div className="flex items-center justify-between lg:justify-end gap-2.5 overflow-x-auto pb-1 lg:pb-0">
+              <div className="flex items-center gap-1.5 shrink-0">
+                {['ALL', ...skillsList].map((s) => {
+                  const isActive = skillFilter === s;
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => setSkillFilter(s)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                        isActive
+                          ? 'bg-slate-900 text-white shadow-xs font-black'
+                          : 'bg-slate-100/80 text-slate-600 hover:bg-slate-200/80 hover:text-slate-900'
+                      }`}
+                    >
+                      {s === 'ALL' ? 'All Trades' : s}
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="h-5 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+              <div className="h-6 w-[1px] bg-slate-200/80 shrink-0 mx-0.5 hidden sm:block" />
 
               {/* Grid / Table Toggle */}
-              <div className="flex items-center bg-slate-100 p-1 rounded-2xl">
+              <div className="flex items-center bg-slate-100/90 p-1 rounded-2xl border border-slate-200/60 shrink-0">
                 <button
                   onClick={() => setViewMode('GRID')}
                   className={`p-1.5 rounded-xl transition cursor-pointer ${
