@@ -26,6 +26,8 @@ class User(AbstractUser):
 
 
 class EngineerProfile(models.Model):
+    """Login-capable engineer profile (linked to a User account)."""
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -50,3 +52,30 @@ class EngineerProfile(models.Model):
     @property
     def projects_assigned(self):
         return self.user.assigned_projects.count()
+
+
+class JuniorEngineer(models.Model):
+    """Directory of junior engineers for the dashboard (no login accounts).
+
+    Seeded from Junior Engineer.xlsx via data migration.
+    """
+
+    sr_no = models.PositiveIntegerField(unique=True)
+    name = models.CharField(max_length=255)
+    cnic = models.CharField(max_length=20, unique=True)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    degree_16 = models.CharField(max_length=255, blank=True)
+    degree_18 = models.CharField(max_length=255, blank=True)
+    division = models.CharField(max_length=100)
+    assigned_district = models.CharField(max_length=100, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['sr_no']
+        verbose_name = 'Junior Engineer'
+        verbose_name_plural = 'Junior Engineers'
+
+    def __str__(self):
+        return f'{self.sr_no}. {self.name} ({self.division})'

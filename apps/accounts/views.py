@@ -5,8 +5,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.accounts.models import User
+from apps.accounts.models import JuniorEngineer, User
 from apps.accounts.serializers import (
+    JuniorEngineerSerializer,
     LoginSerializer,
     RegisterUserSerializer,
     UserSerializer,
@@ -229,3 +230,34 @@ class UserActivateView(APIView):
             data=UserSerializer(user).data,
             message='User activated successfully.',
         )
+
+
+class JuniorEngineerListView(APIView):
+    """List junior engineers from the Excel-seeded directory (dashboard data)."""
+
+    permission_classes = [IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+
+    def get(self, request):
+        queryset = JuniorEngineer.objects.filter(is_active=True)
+
+        division = request.query_params.get('division')
+        district = request.query_params.get('district') or request.query_params.get('assigned_district')
+        search = request.query_params.get('search')
+
+        if division:
+            queryset = queryset.filter(division__iexact=division)
+        if district:
+            queryset = queryset.filter(assigned_district__iexact=district)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(email__icontains=search)
+                | Q(phone__icontains=search)
+                | Q(cnic__icontains=search)
+            )
+
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(queryset, request)
+        serializer = JuniorEngineerSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)

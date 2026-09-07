@@ -6,6 +6,7 @@ from rest_framework import permissions
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.accounts.views import (
+    JuniorEngineerListView,
     LoginView,
     LogoutView,
     MeView,
@@ -42,6 +43,9 @@ urlpatterns = [
     path('users/', UserListView.as_view(), name='user-list'),
     path('users/<int:id>/', UserDetailView.as_view(), name='user-detail'),
     path('users/<int:id>/activate/', UserActivateView.as_view(), name='user-activate'),
+
+    # Junior engineers directory (Excel-seeded dashboard data)
+    path('engineers/', JuniorEngineerListView.as_view(), name='junior-engineer-list'),
 
     # Projects, Compliance, Review, Handover & Reports
     path('', include('apps.projects.urls')),

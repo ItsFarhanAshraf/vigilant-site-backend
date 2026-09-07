@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from apps.accounts.models import EngineerProfile, User
+from apps.accounts.models import EngineerProfile, JuniorEngineer, User
 
 
 @admin.register(User)
@@ -33,3 +33,15 @@ class EngineerProfileAdmin(admin.ModelAdmin):
     list_filter = ('assigned_division', 'joined_at')
     search_fields = ('employee_code', 'user__username', 'assigned_division')
     readonly_fields = ('joined_at',)
+
+
+@admin.register(JuniorEngineer)
+class JuniorEngineerAdmin(admin.ModelAdmin):
+    list_display = (
+        'sr_no', 'name', 'cnic', 'email', 'phone', 'division',
+        'assigned_district', 'is_active',
+    )
+    list_filter = ('division', 'assigned_district', 'is_active')
+    search_fields = ('name', 'cnic', 'email', 'phone', 'division', 'assigned_district')
+    ordering = ('sr_no',)
+    readonly_fields = ('created_at',)

@@ -1,7 +1,6 @@
-from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from apps.accounts.models import EngineerProfile, User
+from apps.accounts.models import EngineerProfile, JuniorEngineer, User
 from apps.common.enums import AuditAction, UserRole
 from apps.common.utils import log_audit
 
@@ -21,6 +20,8 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
+        from django.contrib.auth import authenticate
+
         user = authenticate(
             username=attrs['username'],
             password=attrs['password'],
@@ -136,3 +137,14 @@ class EngineerProfileSerializer(serializers.ModelSerializer):
 
     def get_projects_assigned(self, obj):
         return obj.projects_assigned
+
+
+class JuniorEngineerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JuniorEngineer
+        fields = (
+            'id', 'sr_no', 'name', 'cnic', 'email', 'phone',
+            'degree_16', 'degree_18', 'division', 'assigned_district',
+            'is_active', 'created_at',
+        )
+        read_only_fields = fields
