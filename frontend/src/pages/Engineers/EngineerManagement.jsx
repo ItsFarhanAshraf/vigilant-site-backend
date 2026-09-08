@@ -743,16 +743,16 @@ export const EngineerManagement = () => {
           MODAL 0: COMPLETE ENGINEER PROFILE & CREDENTIALS (EYE ICON DETAILS MODAL)
          ========================================================================= */}
       {selectedEngineerForDetails && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl p-6 md:p-7 space-y-5 animate-in fade-in my-8">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
+          <div className="relative bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
             {/* Modal Header */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-100">
+            <div className="flex items-start justify-between gap-4 p-5 md:p-6 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-4">
                 <div className="relative shrink-0">
                   <img
                     src={selectedEngineerForDetails.avatar}
                     alt={selectedEngineerForDetails.name}
-                    className="h-16 w-16 rounded-2xl object-cover ring-4 ring-orange-100 shadow-md"
+                    className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl object-cover ring-4 ring-orange-100 shadow-md"
                   />
                   <span
                     className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${
@@ -799,186 +799,189 @@ export const EngineerManagement = () => {
               </button>
             </div>
 
-            {/* Grid of Details Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Academic Credentials Card */}
-              <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-100/80 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-orange-950 uppercase tracking-wider">
-                  <GraduationCap className="h-4 w-4 text-orange-600 shrink-0" />
-                  <span>Academic Qualifications</span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                      16-Year Degree (Graduation / BS)
-                    </span>
-                    <span className="font-bold text-slate-900 block mt-0.5">
-                      {selectedEngineerForDetails.degree16 || 'Civil Engineering'}
-                    </span>
+            {/* Scrollable Body */}
+            <div className="p-5 md:p-6 overflow-y-auto space-y-4 flex-1">
+              {/* Grid of Details Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Academic Credentials Card */}
+                <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-100/80 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-black text-orange-950 uppercase tracking-wider">
+                    <GraduationCap className="h-4 w-4 text-orange-600 shrink-0" />
+                    <span>Academic Qualifications</span>
                   </div>
 
-                  <div className="pt-2 border-t border-orange-100/60">
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                      18-Year Degree (Postgraduate / MS / M.Sc)
-                    </span>
-                    <span className="font-bold text-slate-900 block mt-0.5">
-                      {selectedEngineerForDetails.degree18 ? (
-                        selectedEngineerForDetails.degree18
-                      ) : (
-                        <span className="text-slate-400 italic font-normal">None / Not Specified</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Administrative Jurisdiction Card */}
-              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100/80 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-blue-950 uppercase tracking-wider">
-                  <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span>Administrative Allocation</span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                      Assigned Division
-                    </span>
-                    <span className="font-bold text-slate-900 block mt-0.5">
-                      {selectedEngineerForDetails.assignedDivision || 'Lahore'}
-                    </span>
-                  </div>
-
-                  <div className="pt-2 border-t border-blue-100/60">
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                      Assigned District
-                    </span>
-                    <span className="font-bold text-slate-900 block mt-0.5 flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-                      {selectedEngineerForDetails.assignedDistrict || selectedEngineerForDetails.assignedDivision || 'Lahore'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contact & CNIC Identity Card */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-slate-900 uppercase tracking-wider">
-                  <ShieldCheck className="h-4 w-4 text-slate-700 shrink-0" />
-                  <span>Identity & Contact</span>
-                </div>
-
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                      National CNIC Number
-                    </span>
-                    <span className="font-mono font-black text-slate-900 block mt-0.5">
-                      {selectedEngineerForDetails.cnic || '3520261379223'}
-                    </span>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-200/60 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="space-y-2 text-xs">
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                        Official Email
+                        16-Year Degree (Graduation / BS)
                       </span>
-                      <a
-                        href={`mailto:${selectedEngineerForDetails.email}`}
-                        className="font-medium text-orange-600 hover:text-orange-700 hover:underline block truncate mt-0.5"
-                        title={selectedEngineerForDetails.email}
-                      >
-                        {selectedEngineerForDetails.email}
-                      </a>
+                      <span className="font-bold text-slate-900 block mt-0.5">
+                        {selectedEngineerForDetails.degree16 || 'Civil Engineering'}
+                      </span>
                     </div>
-                    <div>
+
+                    <div className="pt-2 border-t border-orange-100/60">
                       <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-                        Contact Phone
+                        18-Year Degree (Postgraduate / MS / M.Sc)
                       </span>
-                      <a
-                        href={`tel:${selectedEngineerForDetails.contact}`}
-                        className="font-mono font-bold text-slate-800 hover:text-orange-600 block mt-0.5"
-                      >
-                        {selectedEngineerForDetails.contact}
-                      </a>
+                      <span className="font-bold text-slate-900 block mt-0.5">
+                        {selectedEngineerForDetails.degree18 ? (
+                          selectedEngineerForDetails.degree18
+                        ) : (
+                          <span className="text-slate-400 italic font-normal">None / Not Specified</span>
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Operational Performance Summary Card */}
-              <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100/80 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-black text-emerald-950 uppercase tracking-wider">
-                  <ClipboardCheck className="h-4 w-4 text-emerald-700 shrink-0" />
-                  <span>Field Operations & Performance</span>
-                </div>
+                {/* Administrative Jurisdiction Card */}
+                <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100/80 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-black text-blue-950 uppercase tracking-wider">
+                    <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
+                    <span>Administrative Allocation</span>
+                  </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
-                    <span className="text-[9.5px] font-bold text-slate-400 block">Assigned Sites</span>
-                    <span className="font-mono font-black text-slate-900 text-sm">
-                      {selectedEngineerForDetails.assignedHousesCount} Houses
-                    </span>
-                  </div>
-                  <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
-                    <span className="text-[9.5px] font-bold text-slate-400 block">Inspections</span>
-                    <span className="font-mono font-black text-emerald-700 text-sm">
-                      {selectedEngineerForDetails.completedVisits} Done
-                    </span>
-                  </div>
-                  <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
-                    <span className="text-[9.5px] font-bold text-slate-400 block">Labour Trained</span>
-                    <span className="font-mono font-black text-purple-900 text-sm">
-                      {selectedEngineerForDetails.workersTrained} Workers
-                    </span>
-                  </div>
-                  <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
-                    <span className="text-[9.5px] font-bold text-slate-400 block">Safety Score</span>
-                    <span className="font-mono font-black text-emerald-800 text-sm">
-                      {selectedEngineerForDetails.safetyComplianceScore}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Assigned Houses List Strip */}
-            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="space-y-0.5">
-                <span className="text-[10.5px] font-black text-slate-700 uppercase tracking-wider block">
-                  Supervised Houses ({selectedEngineerForDetails.assignedHousesCount})
-                </span>
-                <div className="flex flex-wrap gap-1.5 mt-1">
-                  {selectedEngineerForDetails.assignedHouses?.length > 0 ? (
-                    selectedEngineerForDetails.assignedHouses.map((hId) => (
-                      <span
-                        key={hId}
-                        className="px-2 py-0.5 rounded-lg text-[10.5px] font-mono font-bold bg-white text-slate-800 border border-slate-200"
-                      >
-                        {hId}
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                        Assigned Division
                       </span>
-                    ))
-                  ) : (
-                    <span className="text-slate-400 italic text-xs">No active housing units assigned yet</span>
-                  )}
+                      <span className="font-bold text-slate-900 block mt-0.5">
+                        {selectedEngineerForDetails.assignedDivision || 'Lahore'}
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-blue-100/60">
+                      <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                        Assigned District
+                      </span>
+                      <span className="font-bold text-slate-900 block mt-0.5 flex items-center gap-1">
+                        <MapPin className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                        {selectedEngineerForDetails.assignedDistrict || selectedEngineerForDetails.assignedDivision || 'Lahore'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact & CNIC Identity Card */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-black text-slate-900 uppercase tracking-wider">
+                    <ShieldCheck className="h-4 w-4 text-slate-700 shrink-0" />
+                    <span>Identity & Contact</span>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                        National CNIC Number
+                      </span>
+                      <span className="font-mono font-black text-slate-900 block mt-0.5">
+                        {selectedEngineerForDetails.cnic || '3520261379223'}
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200/60 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                          Official Email
+                        </span>
+                        <a
+                          href={`mailto:${selectedEngineerForDetails.email}`}
+                          className="font-medium text-orange-600 hover:text-orange-700 hover:underline block truncate mt-0.5"
+                          title={selectedEngineerForDetails.email}
+                        >
+                          {selectedEngineerForDetails.email}
+                        </a>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                          Contact Phone
+                        </span>
+                        <a
+                          href={`tel:${selectedEngineerForDetails.contact}`}
+                          className="font-mono font-bold text-slate-800 hover:text-orange-600 block mt-0.5"
+                        >
+                          {selectedEngineerForDetails.contact}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Operational Performance Summary Card */}
+                <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100/80 space-y-3">
+                  <div className="flex items-center gap-2 text-xs font-black text-emerald-950 uppercase tracking-wider">
+                    <ClipboardCheck className="h-4 w-4 text-emerald-700 shrink-0" />
+                    <span>Field Operations & Performance</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
+                      <span className="text-[9.5px] font-bold text-slate-400 block">Assigned Sites</span>
+                      <span className="font-mono font-black text-slate-900 text-sm">
+                        {selectedEngineerForDetails.assignedHousesCount} Houses
+                      </span>
+                    </div>
+                    <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
+                      <span className="text-[9.5px] font-bold text-slate-400 block">Inspections</span>
+                      <span className="font-mono font-black text-emerald-700 text-sm">
+                        {selectedEngineerForDetails.completedVisits} Done
+                      </span>
+                    </div>
+                    <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
+                      <span className="text-[9.5px] font-bold text-slate-400 block">Labour Trained</span>
+                      <span className="font-mono font-black text-purple-900 text-sm">
+                        {selectedEngineerForDetails.workersTrained} Workers
+                      </span>
+                    </div>
+                    <div className="p-2 bg-white rounded-xl border border-emerald-100 shadow-2xs text-center">
+                      <span className="text-[9.5px] font-bold text-slate-400 block">Safety Score</span>
+                      <span className="font-mono font-black text-emerald-800 text-sm">
+                        {selectedEngineerForDetails.safetyComplianceScore}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="text-[11px] text-slate-500 shrink-0">
-                <span className="font-bold text-slate-700">Registered:</span>{' '}
-                {selectedEngineerForDetails.createdAt
-                  ? new Date(selectedEngineerForDetails.createdAt).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                  : 'Sep 7, 2026'}
+              {/* Assigned Houses List Strip */}
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="text-[10.5px] font-black text-slate-700 uppercase tracking-wider block">
+                    Supervised Houses ({selectedEngineerForDetails.assignedHousesCount})
+                  </span>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {selectedEngineerForDetails.assignedHouses?.length > 0 ? (
+                      selectedEngineerForDetails.assignedHouses.map((hId) => (
+                        <span
+                          key={hId}
+                          className="px-2 py-0.5 rounded-lg text-[10.5px] font-mono font-bold bg-white text-slate-800 border border-slate-200"
+                        >
+                          {hId}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-slate-400 italic text-xs">No active housing units assigned yet</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-slate-500 shrink-0">
+                  <span className="font-bold text-slate-700">Registered:</span>{' '}
+                  {selectedEngineerForDetails.createdAt
+                    ? new Date(selectedEngineerForDetails.createdAt).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                    : 'Sep 7, 2026'}
+                </div>
               </div>
             </div>
 
             {/* Modal Actions */}
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100">
+            <div className="p-4 md:p-5 border-t border-slate-100 shrink-0 bg-slate-50/70 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -1029,7 +1032,7 @@ export const EngineerManagement = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedEngineerForDetails(null)}
-                  className="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold transition cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-extrabold transition cursor-pointer"
                 >
                   Close
                 </button>
@@ -1043,10 +1046,10 @@ export const EngineerManagement = () => {
           MODAL 1: REGISTER NEW JUNIOR ENGINEER (ALL ATTRIBUTES)
          ========================================================================= */}
       {isAddEngineerModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-xl w-full border border-slate-200 shadow-2xl p-6 md:p-7 space-y-5 animate-in fade-in my-8">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
+          <div className="relative bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
             {/* Modal Header */}
-            <div className="flex items-start justify-between pb-3.5 border-b border-slate-100">
+            <div className="flex items-start justify-between p-5 md:p-6 border-b border-slate-100 shrink-0 bg-white">
               <div>
                 <h3 className="text-base font-black text-slate-900">
                   Register Field Junior Engineer
@@ -1057,188 +1060,191 @@ export const EngineerManagement = () => {
               </div>
               <button
                 onClick={() => setIsAddEngineerModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer shrink-0"
                 title="Close"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleAddEngineerSubmit} className="space-y-4">
-              {/* Row 1: Sr No & Full Name */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Serial No (sr_no)
-                  </label>
-                  <input
-                    type="number"
-                    value={newEngineerForm.sr_no}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, sr_no: e.target.value })}
-                    placeholder="84"
-                    required
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
+            <form onSubmit={handleAddEngineerSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {/* Scrollable Form Body */}
+              <div className="p-5 md:p-6 overflow-y-auto space-y-4 flex-1">
+                {/* Row 1: Sr No & Full Name */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      Serial No (sr_no)
+                    </label>
+                    <input
+                      type="number"
+                      value={newEngineerForm.sr_no}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, sr_no: e.target.value })}
+                      placeholder="84"
+                      required
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      Full Name (name)
+                    </label>
+                    <input
+                      type="text"
+                      value={newEngineerForm.name}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, name: e.target.value })}
+                      placeholder="e.g. Aon Muhammad"
+                      required
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Full Name (name)
+                {/* Row 2: CNIC, Phone & Email */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      CNIC (cnic)
+                    </label>
+                    <input
+                      type="text"
+                      value={newEngineerForm.cnic}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, cnic: e.target.value })}
+                      placeholder="3520261379223"
+                      required
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      Phone (phone)
+                    </label>
+                    <input
+                      type="text"
+                      value={newEngineerForm.phone}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, phone: e.target.value })}
+                      placeholder="3234597659"
+                      required
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      Email (email)
+                    </label>
+                    <input
+                      type="email"
+                      value={newEngineerForm.email}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, email: e.target.value })}
+                      placeholder="aon.muhammad@hotmail.com"
+                      required
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 3: Degrees (16-year & 18-year) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      16-Year Degree (degree_16)
+                    </label>
+                    <input
+                      type="text"
+                      value={newEngineerForm.degree_16}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, degree_16: e.target.value })}
+                      placeholder="Civil Engineering"
+                      required
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      18-Year Degree (degree_18)
+                    </label>
+                    <input
+                      type="text"
+                      value={newEngineerForm.degree_18}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, degree_18: e.target.value })}
+                      placeholder="M.Sc Water Resource Engineering"
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 4: Division & Assigned District */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      Administrative Division (division)
+                    </label>
+                    <select
+                      value={newEngineerForm.division}
+                      onChange={(e) => {
+                        const div = e.target.value;
+                        const defaultDist = DIVISION_DISTRICTS[div]?.[0] || div;
+                        setNewEngineerForm({
+                          ...newEngineerForm,
+                          division: div,
+                          assigned_district: defaultDist,
+                        });
+                      }}
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    >
+                      {Object.keys(DIVISION_DISTRICTS).map((div) => (
+                        <option key={div} value={div}>
+                          {div}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                      Assigned District (assigned_district)
+                    </label>
+                    <select
+                      value={newEngineerForm.assigned_district}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, assigned_district: e.target.value })}
+                      className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                    >
+                      {(DIVISION_DISTRICTS[newEngineerForm.division] || [newEngineerForm.division]).map((dist) => (
+                        <option key={dist} value={dist}>
+                          {dist}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Row 5: Active Status & Auto Assignment Notice */}
+                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                  <label className="flex items-center gap-2 font-bold text-slate-800 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={newEngineerForm.is_active}
+                      onChange={(e) => setNewEngineerForm({ ...newEngineerForm, is_active: e.target.checked })}
+                      className="h-4 w-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300"
+                    />
+                    <span>Active Status (is_active: true)</span>
                   </label>
-                  <input
-                    type="text"
-                    value={newEngineerForm.name}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, name: e.target.value })}
-                    placeholder="e.g. Aon Muhammad"
-                    required
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
+
+                  <span className="text-[11px] text-slate-400 italic">
+                    ID & Created At will be auto-generated.
+                  </span>
                 </div>
               </div>
 
-              {/* Row 2: CNIC, Phone & Email */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    CNIC (cnic)
-                  </label>
-                  <input
-                    type="text"
-                    value={newEngineerForm.cnic}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, cnic: e.target.value })}
-                    placeholder="3520261379223"
-                    required
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Phone (phone)
-                  </label>
-                  <input
-                    type="text"
-                    value={newEngineerForm.phone}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, phone: e.target.value })}
-                    placeholder="3234597659"
-                    required
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-mono focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Email (email)
-                  </label>
-                  <input
-                    type="email"
-                    value={newEngineerForm.email}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, email: e.target.value })}
-                    placeholder="aon.muhammad@hotmail.com"
-                    required
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
-                </div>
-              </div>
-
-              {/* Row 3: Degrees (16-year & 18-year) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    16-Year Degree (degree_16)
-                  </label>
-                  <input
-                    type="text"
-                    value={newEngineerForm.degree_16}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, degree_16: e.target.value })}
-                    placeholder="Civil Engineering"
-                    required
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    18-Year Degree (degree_18)
-                  </label>
-                  <input
-                    type="text"
-                    value={newEngineerForm.degree_18}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, degree_18: e.target.value })}
-                    placeholder="M.Sc Water Resource Engineering"
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  />
-                </div>
-              </div>
-
-              {/* Row 4: Division & Assigned District */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Administrative Division (division)
-                  </label>
-                  <select
-                    value={newEngineerForm.division}
-                    onChange={(e) => {
-                      const div = e.target.value;
-                      const defaultDist = DIVISION_DISTRICTS[div]?.[0] || div;
-                      setNewEngineerForm({
-                        ...newEngineerForm,
-                        division: div,
-                        assigned_district: defaultDist,
-                      });
-                    }}
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  >
-                    {Object.keys(DIVISION_DISTRICTS).map((div) => (
-                      <option key={div} value={div}>
-                        {div}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[10.5px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Assigned District (assigned_district)
-                  </label>
-                  <select
-                    value={newEngineerForm.assigned_district}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, assigned_district: e.target.value })}
-                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                  >
-                    {(DIVISION_DISTRICTS[newEngineerForm.division] || [newEngineerForm.division]).map((dist) => (
-                      <option key={dist} value={dist}>
-                        {dist}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 5: Active Status & Auto Assignment Notice */}
-              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <label className="flex items-center gap-2 font-bold text-slate-800 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={newEngineerForm.is_active}
-                    onChange={(e) => setNewEngineerForm({ ...newEngineerForm, is_active: e.target.checked })}
-                    className="h-4 w-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300"
-                  />
-                  <span>Active Status (is_active: true)</span>
-                </label>
-
-                <span className="text-[11px] text-slate-400 italic">
-                  ID & Created At will be auto-generated.
-                </span>
-              </div>
-
-              {/* Modal Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              {/* Fixed Footer */}
+              <div className="p-4 md:p-5 border-t border-slate-100 shrink-0 bg-slate-50/70 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddEngineerModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1258,9 +1264,10 @@ export const EngineerManagement = () => {
           MODAL 2: PERFORMANCE SCORECARD (ELEGANT)
          ========================================================================= */}
       {selectedEngineerForScorecard && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl p-6 space-y-5 animate-in fade-in">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
+          <div className="relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 md:p-6 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-3">
                 <img
                   src={selectedEngineerForScorecard.avatar}
@@ -1274,55 +1281,59 @@ export const EngineerManagement = () => {
               </div>
               <button
                 onClick={() => setSelectedEngineerForScorecard(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer shrink-0"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Scorecard Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-100">
-                <span className="text-[10px] font-extrabold text-emerald-800 uppercase">Inspection Compliance</span>
-                <div className="text-2xl font-black text-emerald-950 mt-0.5">{selectedEngineerForScorecard.safetyComplianceScore}%</div>
-                <span className="text-[10px] text-emerald-700 font-medium">Top Tier Field Officer</span>
-              </div>
-
-              <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-100">
-                <span className="text-[10px] font-extrabold text-amber-800 uppercase">Quality Rating</span>
-                <div className="text-2xl font-black text-amber-950 mt-0.5 flex items-center gap-1">
-                  <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
-                  <span>{selectedEngineerForScorecard.rating} / 5.0</span>
+            {/* Scrollable Body */}
+            <div className="p-5 md:p-6 overflow-y-auto space-y-4 flex-1">
+              {/* Scorecard Metrics Grid */}
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                  <span className="text-[10px] font-extrabold text-emerald-800 uppercase">Inspection Compliance</span>
+                  <div className="text-2xl font-black text-emerald-950 mt-0.5">{selectedEngineerForScorecard.safetyComplianceScore}%</div>
+                  <span className="text-[10px] text-emerald-700 font-medium">Top Tier Field Officer</span>
                 </div>
-                <span className="text-[10px] text-amber-700 font-medium">Based on 40+ inspections</span>
+
+                <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-100">
+                  <span className="text-[10px] font-extrabold text-amber-800 uppercase">Quality Rating</span>
+                  <div className="text-2xl font-black text-amber-950 mt-0.5 flex items-center gap-1">
+                    <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
+                    <span>{selectedEngineerForScorecard.rating} / 5.0</span>
+                  </div>
+                  <span className="text-[10px] text-amber-700 font-medium">Based on 40+ inspections</span>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+                  <span className="text-[10px] font-extrabold text-slate-400 uppercase">Visits Completed</span>
+                  <div className="text-xl font-black text-slate-900 mt-0.5 font-mono">{selectedEngineerForScorecard.completedVisits} Visits</div>
+                </div>
+
+                <div className="p-3.5 bg-purple-50 rounded-2xl border border-purple-100">
+                  <span className="text-[10px] font-extrabold text-purple-800 uppercase">Workers Trained</span>
+                  <div className="text-xl font-black text-purple-900 mt-0.5 font-mono">{selectedEngineerForScorecard.workersTrained} Trained</div>
+                </div>
               </div>
 
-              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
-                <span className="text-[10px] font-extrabold text-slate-400 uppercase">Visits Completed</span>
-                <div className="text-xl font-black text-slate-900 mt-0.5 font-mono">{selectedEngineerForScorecard.completedVisits} Visits</div>
-              </div>
-
-              <div className="p-3.5 bg-purple-50 rounded-2xl border border-purple-100">
-                <span className="text-[10px] font-extrabold text-purple-800 uppercase">Workers Trained</span>
-                <div className="text-xl font-black text-purple-900 mt-0.5 font-mono">{selectedEngineerForScorecard.workersTrained} Trained</div>
+              {/* Active House Allocations List */}
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
+                <span className="font-extrabold text-slate-900 block">
+                  Assigned Housing Units ({selectedEngineerForScorecard.assignedHousesCount}):
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedEngineerForScorecard.assignedHouses?.map((hId) => (
+                    <span key={hId} className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold bg-white text-slate-800 border border-slate-200 shadow-2xs">
+                      {hId}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Active House Allocations List */}
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2">
-              <span className="font-extrabold text-slate-900 block">
-                Assigned Housing Units ({selectedEngineerForScorecard.assignedHousesCount}):
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedEngineerForScorecard.assignedHouses?.map((hId) => (
-                  <span key={hId} className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold bg-white text-slate-800 border border-slate-200 shadow-2xs">
-                    {hId}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end">
+            {/* Fixed Footer */}
+            <div className="p-4 md:p-5 border-t border-slate-100 shrink-0 bg-slate-50/70 flex justify-end">
               <button
                 type="button"
                 onClick={() => setSelectedEngineerForScorecard(null)}
@@ -1339,9 +1350,10 @@ export const EngineerManagement = () => {
           MODAL 3: ASSIGN HOUSES TO ENGINEER
          ========================================================================= */}
       {assignHousesModalEngineer && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl p-6 space-y-4 animate-in fade-in">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden">
+          <div className="relative bg-white rounded-3xl max-w-md w-full max-h-[90vh] flex flex-col border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 md:p-6 border-b border-slate-100 shrink-0 bg-white">
               <div>
                 <h3 className="text-sm font-black text-slate-900">
                   Assign House to {assignHousesModalEngineer.name}
@@ -1350,36 +1362,40 @@ export const EngineerManagement = () => {
               </div>
               <button
                 onClick={() => setAssignHousesModalEngineer(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 transition cursor-pointer shrink-0"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleAssignHouseSubmit} className="space-y-4">
-              <div>
-                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
-                  Select House from Directory
-                </label>
-                <select
-                  value={selectedHouseToAssign}
-                  onChange={(e) => setSelectedHouseToAssign(e.target.value)}
-                  required
-                  className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
-                >
-                  {houses.map((h) => (
-                    <option key={h.id} value={h.id}>
-                      {h.id} — {h.ownerName} ({h.district} • Current: {h.engineerName})
-                    </option>
-                  ))}
-                </select>
+            <form onSubmit={handleAssignHouseSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              {/* Scrollable Form Body */}
+              <div className="p-5 md:p-6 overflow-y-auto space-y-4 flex-1">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
+                    Select House from Directory
+                  </label>
+                  <select
+                    value={selectedHouseToAssign}
+                    onChange={(e) => setSelectedHouseToAssign(e.target.value)}
+                    required
+                    className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 text-slate-800"
+                  >
+                    {houses.map((h) => (
+                      <option key={h.id} value={h.id}>
+                        {h.id} — {h.ownerName} ({h.district} • Current: {h.engineerName})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2">
+              {/* Fixed Footer */}
+              <div className="p-4 md:p-5 border-t border-slate-100 shrink-0 bg-slate-50/70 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setAssignHousesModalEngineer(null)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 transition cursor-pointer"
                 >
                   Cancel
                 </button>
