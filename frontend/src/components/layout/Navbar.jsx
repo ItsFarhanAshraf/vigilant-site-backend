@@ -59,6 +59,16 @@ export const Navbar = () => {
   const roleRef = useRef(null);
   const searchRef = useRef(null);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      console.error('Logout error', e);
+    } finally {
+      navigate('/login');
+    }
+  };
+
   const unreadCount = notifications?.filter((n) => n.unread)?.length || 0;
 
   // Multi-Entity Global Search filter
@@ -529,6 +539,17 @@ export const Navbar = () => {
           title="System Settings"
         >
           <Settings className="h-4 w-4" />
+        </button>
+
+        {/* Prominent Direct Logout Button */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-200/80 font-bold text-xs transition cursor-pointer shadow-2xs"
+          title="Logout from session and return to Login page"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline-block">{t('logout') || 'Logout'}</span>
         </button>
       </div>
     </header>

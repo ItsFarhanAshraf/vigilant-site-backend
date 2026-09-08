@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useDashboardData } from '../../context/DashboardDataContext';
@@ -30,6 +30,17 @@ export const Sidebar = () => {
   const { t, isRTL } = useLanguage();
   const { notifications, safetyIssues, aiHazards, houses } = useDashboardData();
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (e) {
+      console.error('Logout error', e);
+    } finally {
+      navigate('/login');
+    }
+  };
 
   const unreadNotifsCount = notifications?.filter((n) => n.unread)?.length || 0;
   const criticalSafetyCount = safetyIssues?.filter((s) => s.severity === 'Critical' && s.status === 'Open')?.length || 0;
@@ -163,7 +174,7 @@ export const Sidebar = () => {
 
               <button
                 type="button"
-                onClick={logout}
+                onClick={handleLogout}
                 className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
                 title={t('logout')}
               >
@@ -182,7 +193,7 @@ export const Sidebar = () => {
             </div>
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogout}
               className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
               title={t('logout')}
             >
