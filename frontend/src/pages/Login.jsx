@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, TEST_USERS } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { LanguageToggle } from '../components/common/LanguageToggle';
-import { Home, Lock, User, ArrowRight, ShieldCheck, Globe } from 'lucide-react';
+import { Home, Lock, User, Globe } from 'lucide-react';
 import { Spinner } from '../components/common/Spinner';
 
 export const Login = () => {
@@ -35,19 +35,6 @@ export const Login = () => {
       navigate('/');
     } catch (err) {
       setError(err?.response?.data?.message || err.message || t('loginError'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (userObj) => {
-    setError('');
-    setLoading(true);
-    try {
-      await login(userObj.username, userObj.password);
-      navigate('/');
-    } catch (err) {
-      setError(err?.response?.data?.message || err.message || 'Quick login failed.');
     } finally {
       setLoading(false);
     }
@@ -139,41 +126,6 @@ export const Login = () => {
               {loading ? <Spinner size="sm" /> : t('signIn')}
             </button>
           </form>
-
-          {/* Quick Demo Login Cards */}
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                {t('quickDemoLogins')}
-              </span>
-              <span className="text-[10px] text-emerald-800 font-bold px-2 py-0.5 bg-emerald-50 rounded border border-emerald-200">
-                {t('localTestingReady')}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-2.5">
-              {[
-                { role: 'ADMIN', label: t('adminRole') || 'Administrator', username: 'admin', password: 'admin', bg: 'hover:bg-emerald-50/70 hover:border-emerald-300' },
-              ].map((u) => (
-                <button
-                  key={u.role}
-                  type="button"
-                  onClick={() => handleQuickLogin(u)}
-                  className={`flex items-start justify-between p-3 rounded-xl border border-slate-200 bg-slate-50/80 ${u.bg} hover:shadow-xs transition text-left group cursor-pointer`}
-                >
-                  <div className={isRTL ? 'text-right' : 'text-left'}>
-                    <div className="text-xs font-bold text-slate-800 group-hover:text-[#0D5C3A]">
-                      {u.label}
-                    </div>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      user: <span className="font-semibold">{u.username}</span> | pw: <span className="font-semibold">{u.password}</span>
-                    </div>
-                  </div>
-                  <ArrowRight className={`h-4 w-4 text-slate-300 group-hover:text-[#0D5C3A] transition shrink-0 mt-0.5 ${isRTL ? 'rotate-180 mr-2' : 'ml-2'}`} />
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
